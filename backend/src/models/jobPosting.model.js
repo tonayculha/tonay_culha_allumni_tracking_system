@@ -34,6 +34,7 @@ class JobPostingModel {
       title: row.title,
       company: row.company,
       location: row.location || null,
+      city: row.location || null,
       description: row.description || null,
       authorName: row.author_name || null,
       authorEmail: row.author_email || null,
@@ -164,9 +165,10 @@ class JobPostingModel {
       sets.push(`company = $${idx++}`);
       values.push(data.company.trim());
     }
-    if (data.location !== undefined) {
+    const targetLocation = data.location !== undefined ? data.location : data.city;
+    if (targetLocation !== undefined) {
       sets.push(`location = $${idx++}`);
-      values.push(data.location ? data.location.trim() : null);
+      values.push(targetLocation ? targetLocation.trim() : null);
     }
     if (data.description !== undefined) {
       sets.push(`description = $${idx++}`);

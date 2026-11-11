@@ -2,6 +2,7 @@ const express = require('express');
 const apiUserController = require('../controllers/apiUser.controller');
 const apiJobPostingController = require('../controllers/apiJobPosting.controller');
 const apiApplicationController = require('../controllers/apiApplication.controller');
+const { validateJobPosting } = require('../middlewares/jobValidation.middleware');
 
 const router = express.Router();
 
@@ -302,7 +303,7 @@ router.delete('/:id', apiUserController.deleteUser);
  *               $ref: '#/components/schemas/ErrorResponse'
  */
 router.get('/:id/jobs', apiJobPostingController.getUserJobs);
-router.post('/:id/jobs', apiJobPostingController.createUserJob);
+router.post('/:id/jobs', validateJobPosting, apiJobPostingController.createUserJob);
 
 /**
  * @openapi

@@ -212,6 +212,12 @@ describe('Alumni Tracking System API Test Suite', () => {
       const data = res.json();
       assert.strictEqual(data.status, 'error');
       assert.strictEqual(data.error, 'Not Found');
+      assert.strictEqual(
+        data.reason,
+        "The requested resource or endpoint 'GET /unknown-route' does not exist on this server."
+      );
+      assert.strictEqual(data.path, '/unknown-route');
+      assert.strictEqual(data.method, 'GET');
     });
   });
 
@@ -1403,6 +1409,668 @@ describe('Alumni Tracking System API Test Suite', () => {
       // Verify deletion
       const checkRes = await request(`/api/applications/${appToDelete.id}`);
       assert.strictEqual(checkRes.statusCode, 404);
+    });
+  });
+
+  /* =========================================================================
+   * TASKS 1 & 2: Input Validation & Job Posting Rules
+   * ========================================================================= */
+  describe('Tasks 1 & 2: Input Validation & Job Posting Rules', () => {
+    const validUserId = '11111111-1111-4111-a111-111111111111'; // Ada Lovelace
+    let createdJobId;
+
+    test('POST /api/jobs returns 400 Bad Request when "title" is missing', async () => {
+      const res = await apiRequest('POST', '/api/jobs', {
+        userId: validUserId,
+        company: 'Stripe',
+      });
+
+      assert.strictEqual(res.statusCode, 400);
+      const data = res.json();
+      assert.strictEqual(data.error, 'Validation failed');
+      assert.ok(Array.isArray(data.details));
+      assert.ok(data.details.some((d) => d.includes('title')));
+    });
+
+    test('POST /api/jobs returns 400 Bad Request when "title" is an empty string or whitespace', async () => {
+      const res = await apiRequest('POST', '/api/jobs', {
+        userId: validUserId,
+        title: '   ',
+        company: 'Stripe',
+      });
+
+      assert.strictEqual(res.statusCode, 400);
+      const data = res.json();
+      assert.strictEqual(data.error, 'Validation failed');
+      assert.ok(data.details.some((d) => d.includes('empty')));
+    });
+
+    test('POST /api/jobs returns 400 Bad Request when "title" is not a string (type mismatch)', async () => {
+      const res = await apiRequest('POST', '/api/jobs', {
+        userId: validUserId,
+        title: 12345,
+        company: 'Stripe',
+      });
+
+      assert.strictEqual(res.statusCode, 400);
+      const data = res.json();
+      assert.strictEqual(data.error, 'Validation failed');
+      assert.ok(data.details.some((d) => d.includes('must be a string')));
+    });
+
+    test('POST /api/jobs returns 400 Bad Request when "title" exceeds 120 characters', async () => {
+      const longTitle = 'A'.repeat(121);
+      const res = await apiRequest('POST', '/api/jobs', {
+        userId: validUserId,
+        title: longTitle,
+        company: 'Stripe',
+      });
+
+      assert.strictEqual(res.statusCode, 400);
+      const data = res.json();
+      assert.strictEqual(data.error, 'Validation failed');
+      assert.ok(data.details.some((d) => d.includes('120 characters')));
+    });
+
+    test('POST /api/jobs succeeds when "title" is exactly 120 characters', async () => {
+      const title120 = 'Engineering Lead - '.padEnd(120, 'X');
+      const res = await apiRequest('POST', '/api/jobs', {
+        userId: validUserId,
+        title: title120,
+        company: 'Stripe Global',
+        city: 'San Francisco',
+        description: 'Lead engineering operations.',
+      });
+
+      assert.strictEqual(res.statusCode, 201);
+      const data = res.json();
+      assert.strictEqual(data.title.length, 120);
+      assert.strictEqual(data.company, 'Stripe Global');
+      assert.strictEqual(data.city, 'San Francisco');
+      createdJobId = data.id;
+    });
+
+    test('POST /api/jobs returns 400 Bad Request when "company" is missing', async () => {
+      const res = await apiRequest('POST', '/api/jobs', {
+        userId: validUserId,
+        title: 'Backend Engineer',
+      });
+
+      assert.strictEqual(res.statusCode, 400);
+      const data = res.json();
+      assert.strictEqual(data.error, 'Validation failed');
+      assert.ok(data.details.some((d) => d.includes('company')));
+    });
+
+    test('POST /api/jobs returns 400 Bad Request when "company" is an empty string or whitespace', async () => {
+      const res = await apiRequest('POST', '/api/jobs', {
+        userId: validUserId,
+        title: 'Backend Engineer',
+        company: '   ',
+      });
+
+      assert.strictEqual(res.statusCode, 400);
+      const data = res.json();
+      assert.strictEqual(data.error, 'Validation failed');
+      assert.ok(data.details.some((d) => d.includes('empty')));
+    });
+
+    test('POST /api/jobs returns 400 Bad Request when "company" is not a string', async () => {
+      const res = await apiRequest('POST', '/api/jobs', {
+        userId: validUserId,
+        title: 'Backend Engineer',
+        company: true,
+      });
+
+      assert.strictEqual(res.statusCode, 400);
+      const data = res.json();
+      assert.strictEqual(data.error, 'Validation failed');
+      assert.ok(data.details.some((d) => d.includes('company') && d.includes('must be a string')));
+    });
+
+    test('POST /api/jobs handles optional "city" correctly (valid string vs invalid type)', async () => {
+      // Non-string city should fail with 400
+      const invalidRes = await apiRequest('POST', '/api/jobs', {
+        userId: validUserId,
+        title: 'Cloud Architect',
+        company: 'Google Cloud',
+        city: 99999,
+      });
+      assert.strictEqual(invalidRes.statusCode, 400);
+      const invalidData = invalidRes.json();
+      assert.ok(invalidData.details.some((d) => d.includes('city') && d.includes('must be a string')));
+
+      // Valid string city should succeed
+      const validRes = await apiRequest('POST', '/api/jobs', {
+        userId: validUserId,
+        title: 'Cloud Architect',
+        company: 'Google Cloud',
+        city: 'Zurich, Switzerland',
+      });
+      assert.strictEqual(validRes.statusCode, 201);
+      assert.strictEqual(validRes.json().city, 'Zurich, Switzerland');
+    });
+
+    test('POST /api/jobs handles optional "description" correctly (valid string vs invalid type)', async () => {
+      // Non-string description should fail with 400
+      const invalidRes = await apiRequest('POST', '/api/jobs', {
+        userId: validUserId,
+        title: 'Staff Engineer',
+        company: 'Meta',
+        description: { invalid: 'object' },
+      });
+      assert.strictEqual(invalidRes.statusCode, 400);
+      const invalidData = invalidRes.json();
+      assert.ok(invalidData.details.some((d) => d.includes('description') && d.includes('must be a string')));
+
+      // Valid string description should succeed
+      const validRes = await apiRequest('POST', '/api/jobs', {
+        userId: validUserId,
+        title: 'Staff Engineer',
+        company: 'Meta',
+        description: 'Distributed cache systems and compilers.',
+      });
+      assert.strictEqual(validRes.statusCode, 201);
+      assert.strictEqual(validRes.json().description, 'Distributed cache systems and compilers.');
+    });
+
+    test('POST /api/jobs gracefully handles empty JSON body ({}) with 400 instead of 500', async () => {
+      const res = await apiRequest('POST', '/api/jobs', {});
+      assert.strictEqual(res.statusCode, 400);
+      const data = res.json();
+      assert.strictEqual(data.error, 'Validation failed');
+      assert.ok(Array.isArray(data.details));
+      assert.ok(data.details.length >= 2);
+    });
+
+    test('POST /api/jobs gracefully handles malformed JSON body without crashing', async () => {
+      const malformedPayload = '{"title": "Broken JSON';
+      const res = await apiRequest('POST', '/api/jobs', malformedPayload, {
+        'Content-Type': 'application/json',
+      });
+
+      assert.strictEqual(res.statusCode, 400);
+      const data = res.json();
+      assert.strictEqual(data.error, 'Validation failed');
+    });
+
+    test('PUT /api/jobs/:id enforces identical validation rules for updates', async () => {
+      assert.ok(createdJobId, 'Precondition: createdJobId must exist');
+
+      // 1. Missing title on update
+      const resMissingTitle = await apiRequest('PUT', `/api/jobs/${createdJobId}`, {
+        company: 'Updated Corp',
+      });
+      assert.strictEqual(resMissingTitle.statusCode, 400);
+      assert.strictEqual(resMissingTitle.json().error, 'Validation failed');
+
+      // 2. Title exceeds 120 characters on update
+      const resOver120 = await apiRequest('PUT', `/api/jobs/${createdJobId}`, {
+        title: 'Z'.repeat(125),
+        company: 'Updated Corp',
+      });
+      assert.strictEqual(resOver120.statusCode, 400);
+
+      // 3. Invalid city type on update
+      const resInvalidCity = await apiRequest('PUT', `/api/jobs/${createdJobId}`, {
+        title: 'Updated Title',
+        company: 'Updated Corp',
+        city: false,
+      });
+      assert.strictEqual(resInvalidCity.statusCode, 400);
+
+      // 4. Valid update succeeds
+      const resValidUpdate = await apiRequest('PUT', `/api/jobs/${createdJobId}`, {
+        title: 'Principal Lead Engineer',
+        company: 'Updated Corp',
+        city: 'New York, NY',
+        description: 'New role scope.',
+      });
+      assert.strictEqual(resValidUpdate.statusCode, 200);
+      const updated = resValidUpdate.json();
+      assert.strictEqual(updated.title, 'Principal Lead Engineer');
+      assert.strictEqual(updated.city, 'New York, NY');
+    });
+  });
+
+  /* =========================================================================
+   * TASK 3: Custom Logger Middleware
+   * ========================================================================= */
+  describe('Task 3: Custom Logger Middleware', () => {
+    const { getLocalTimeString, requestLogger } = require('../src/middlewares/requestLogger.middleware');
+
+    test('getLocalTimeString returns HH:MM:SS format in 24-hour time', () => {
+      const testDate = new Date(2026, 10, 11, 9, 5, 7);
+      const formatted = getLocalTimeString(testDate);
+      assert.match(formatted, /^\d{2}:\d{2}:\d{2}$/);
+      assert.strictEqual(formatted, '09:05:07');
+    });
+
+    test('requestLogger measures execution duration from intake to finish and logs structure', (t, done) => {
+      const originalLog = console.log;
+      let capturedLog = null;
+
+      console.log = (msg) => {
+        capturedLog = msg;
+      };
+
+      const mockReq = {
+        method: 'POST',
+        originalUrl: '/jobs',
+      };
+
+      const finishCallbacks = [];
+      const mockRes = {
+        statusCode: 201,
+        on: (event, cb) => {
+          if (event === 'finish') finishCallbacks.push(cb);
+        },
+      };
+
+      requestLogger(mockReq, mockRes, () => {
+        // Trigger finish callback
+        finishCallbacks.forEach((cb) => cb());
+
+        console.log = originalLog;
+
+        assert.ok(capturedLog, 'Logger should have emitted a log line');
+        // Validate exact structure: <time> <method> <route> <restype> <duration>
+        // Example: 10:20:32 POST /jobs 201 18ms
+        const match = capturedLog.match(/^(\d{2}:\d{2}:\d{2})\s+([A-Z]+)\s+(\S+)\s+(\d{3})\s+(\d+ms)$/);
+        assert.ok(match, `Log line did not match expected structure: "${capturedLog}"`);
+        assert.strictEqual(match[2], 'POST');
+        assert.strictEqual(match[3], '/jobs');
+        assert.strictEqual(match[4], '201');
+        assert.match(match[5], /^\d+ms$/);
+        done();
+      });
+    });
+
+    test('Custom logger captures real HTTP requests across top of pipeline', async () => {
+      const originalLog = console.log;
+      const logs = [];
+
+      console.log = (msg) => {
+        logs.push(msg);
+      };
+
+      try {
+        await request('/health');
+        await request('/css/style.css');
+        await apiRequest('GET', '/api/health');
+      } finally {
+        console.log = originalLog;
+      }
+
+      // Verify that all 3 requests were captured by the top-mounted middleware
+      assert.ok(logs.some((l) => l.includes('GET /health 200')));
+      assert.ok(logs.some((l) => l.includes('GET /css/style.css 200')));
+      assert.ok(logs.some((l) => l.includes('GET /api/health 200')));
+
+      // Check log formatting on every captured line
+      for (const logLine of logs) {
+        assert.match(logLine, /^\d{2}:\d{2}:\d{2}\s+[A-Z]+\s+\S+\s+\d{3}\s+\d+ms$/);
+      }
+    });
+  });
+
+  /* =========================================================================
+   * TASK 4: 404 Guardian Middleware
+   * ========================================================================= */
+  describe('Task 4: 404 Guardian Middleware', () => {
+    test('Unmapped /api/* route returns 404 with exact structured JSON and reason', async () => {
+      const res = await apiRequest('GET', '/api/nonexistent-service');
+      assert.strictEqual(res.statusCode, 404);
+      assert.match(res.headers['content-type'], /application\/json/);
+      const data = res.json();
+      assert.strictEqual(data.status, 'error');
+      assert.strictEqual(data.error, 'Not Found');
+      assert.strictEqual(
+        data.reason,
+        "The requested resource or endpoint 'GET /api/nonexistent-service' does not exist on this server."
+      );
+      assert.strictEqual(data.path, '/api/nonexistent-service');
+      assert.strictEqual(data.method, 'GET');
+    });
+
+    test('POST to unmapped route returns 404 with method and path in reason', async () => {
+      const res = await apiRequest('POST', '/api/v2/jobs/invalid', { test: true });
+      assert.strictEqual(res.statusCode, 404);
+      const data = res.json();
+      assert.strictEqual(data.status, 'error');
+      assert.strictEqual(data.error, 'Not Found');
+      assert.strictEqual(
+        data.reason,
+        "The requested resource or endpoint 'POST /api/v2/jobs/invalid' does not exist on this server."
+      );
+      assert.strictEqual(data.method, 'POST');
+      assert.strictEqual(data.path, '/api/v2/jobs/invalid');
+    });
+
+    test('Browser HTML request returns 404 formatted HTML view with explicit reason', async () => {
+      const res = await request('/missing-page', { Accept: 'text/html' });
+      assert.strictEqual(res.statusCode, 404);
+      assert.match(res.headers['content-type'], /text\/html/);
+      assert.match(res.body, /<h1[^>]*>404<\/h1>/);
+      assert.match(res.body, /Route Not Found/);
+      assert.match(
+        res.body,
+        /The requested resource or endpoint 'GET \/missing-page' does not exist on this server\./
+      );
+    });
+
+    test('Unit test notFoundGuardian middleware with mock JSON and HTML flows', () => {
+      const notFoundGuardian = require('../src/middlewares/notFoundGuardian.middleware');
+
+      let jsonPayload = null;
+      let statusCode = null;
+      const mockJsonRes = {
+        status: (code) => {
+          statusCode = code;
+          return {
+            json: (payload) => {
+              jsonPayload = payload;
+              return payload;
+            },
+          };
+        },
+      };
+
+      notFoundGuardian(
+        { method: 'DELETE', originalUrl: '/api/unknown', xhr: true },
+        mockJsonRes,
+        () => {}
+      );
+
+      assert.strictEqual(statusCode, 404);
+      assert.strictEqual(jsonPayload.status, 'error');
+      assert.strictEqual(jsonPayload.error, 'Not Found');
+      assert.strictEqual(
+        jsonPayload.reason,
+        "The requested resource or endpoint 'DELETE /api/unknown' does not exist on this server."
+      );
+      assert.strictEqual(jsonPayload.method, 'DELETE');
+      assert.strictEqual(jsonPayload.path, '/api/unknown');
+    });
+  });
+
+  /* =========================================================================
+   * TASK 5: 5xx Guardian Middleware (Global Error Handler)
+   * ========================================================================= */
+  describe('Task 5: 5xx Guardian Middleware (Global Error Handler)', () => {
+    const errorGuardian = require('../src/middlewares/errorGuardian.middleware');
+
+    test('errorGuardian middleware function has exactly 4 parameters (err, req, res, next)', () => {
+      assert.strictEqual(typeof errorGuardian, 'function');
+      assert.strictEqual(errorGuardian.length, 4, 'Express requires error middleware to declare exactly 4 arguments');
+    });
+
+    test('Unhandled error in API route triggers 5xx Guardian with standardized JSON payload', async () => {
+      const res = await apiRequest('GET', '/api/error-test');
+      assert.strictEqual(res.statusCode, 500);
+      assert.match(res.headers['content-type'], /application\/json/);
+
+      const data = res.json();
+      assert.strictEqual(data.status, 'error');
+      assert.strictEqual(data.error, 'Internal Server Error');
+      assert.strictEqual(data.message, 'A server-side error occurred while processing your request.');
+      assert.strictEqual(data.reason, 'Simulated runtime server crash');
+      assert.strictEqual(data.path, '/api/error-test');
+      assert.strictEqual(data.method, 'GET');
+      // Stack trace should be present in non-production
+      assert.strictEqual(typeof data.stack, 'string');
+    });
+
+    test('Unhandled error with custom 5xx status code (e.g. 503) respects statusCode', async () => {
+      const res = await apiRequest('GET', '/api/error-test?status=503&message=Database+cluster+unreachable');
+      assert.strictEqual(res.statusCode, 503);
+      const data = res.json();
+      assert.strictEqual(data.status, 'error');
+      assert.strictEqual(data.error, 'Internal Server Error');
+      assert.strictEqual(data.reason, 'Database cluster unreachable');
+    });
+
+    test('Browser HTML request encountering 5xx returns formatted HTML error page', async () => {
+      const res = await request('/error-test?message=View+rendering+fault', { Accept: 'text/html' });
+      assert.strictEqual(res.statusCode, 500);
+      assert.match(res.headers['content-type'], /text\/html/);
+      assert.match(res.body, /<h1[^>]*>Error 500<\/h1>/);
+      assert.match(res.body, /Internal Server Error/);
+      assert.match(res.body, /A server-side error occurred while processing your request\./);
+      assert.match(res.body, /View rendering fault/);
+    });
+
+    test('errorGuardian logs timestamped error details to console.error', () => {
+      const originalConsoleError = console.error;
+      let loggedOutput = null;
+
+      console.error = (...args) => {
+        loggedOutput = args.join(' ');
+      };
+
+      try {
+        const mockReq = { method: 'POST', originalUrl: '/api/test-crash' };
+        const mockRes = {
+          status: () => ({ json: () => {} }),
+          setHeader: () => {},
+        };
+        const sampleErr = new Error('Fatal database disconnection');
+
+        errorGuardian(sampleErr, mockReq, mockRes, () => {});
+
+        assert.ok(loggedOutput, 'console.error should have been called');
+        assert.match(loggedOutput, /5xx Server Error \[500\] on POST \/api\/test-crash/);
+        assert.match(loggedOutput, /Fatal database disconnection/);
+      } finally {
+        console.error = originalConsoleError;
+      }
+    });
+
+    test('errorGuardian hides stack trace when NODE_ENV is "production"', () => {
+      const prevEnv = process.env.NODE_ENV;
+      process.env.NODE_ENV = 'production';
+
+      let jsonResult = null;
+      const mockReq = { method: 'GET', originalUrl: '/api/secure-fail' };
+      const mockRes = {
+        status: (code) => {
+          assert.strictEqual(code, 500);
+          return {
+            json: (payload) => {
+              jsonResult = payload;
+              return payload;
+            },
+          };
+        },
+      };
+
+      const originalConsoleError = console.error;
+      console.error = () => {};
+
+      try {
+        const errorWithStack = new Error('Secret system failure');
+        errorGuardian(errorWithStack, mockReq, mockRes, () => {});
+
+        assert.ok(jsonResult);
+        assert.strictEqual(jsonResult.reason, 'Secret system failure');
+        assert.strictEqual(jsonResult.stack, undefined, 'Stack trace must be hidden in production');
+      } finally {
+        process.env.NODE_ENV = prevEnv;
+        console.error = originalConsoleError;
+      }
+    });
+
+    test('Server remains operational after catching a 5xx error without crashing', async () => {
+      // 1. Trigger a 500 error
+      const crashRes = await apiRequest('GET', '/api/error-test');
+      assert.strictEqual(crashRes.statusCode, 500);
+
+      // 2. Immediately issue subsequent valid request to verify process is healthy and responsive
+      const healthRes = await request('/health');
+      assert.strictEqual(healthRes.statusCode, 200);
+      assert.strictEqual(healthRes.json().status, 'ok');
+    });
+  });
+
+  /* =========================================================================
+   * TASK 6: File-Based Persistent Error Logging
+   * ========================================================================= */
+  describe('Task 6: File-Based Persistent Error Logging', () => {
+    const fs = require('fs');
+    const {
+      appendErrorLog,
+      formatErrorEntry,
+      readErrorLog,
+      clearErrorLog,
+      getErrorLogPath,
+      getLogsDir,
+    } = require('../src/utils/fileLogger');
+
+    beforeEach(async () => {
+      await clearErrorLog();
+    });
+
+    test('logs directory is dynamically created at startup', () => {
+      const logsDir = getLogsDir();
+      assert.ok(fs.existsSync(logsDir), `Logs directory "${logsDir}" should exist`);
+    });
+
+    test('formatErrorEntry formats log entry with exact required structure', () => {
+      const testErr = new Error('Database pool exhaustion');
+      testErr.stack = 'Error: Database pool exhaustion\n    at query (/src/db.js:12:3)';
+
+      const entry = formatErrorEntry({
+        method: 'POST',
+        route: '/api/jobs',
+        statusCode: 500,
+        err: testErr,
+        timestamp: '2026-11-11T10:00:00.000Z',
+      });
+
+      // Structure: [<ISO-Timestamp / HH:MM:SS>] [<METHOD>] [<ROUTE>] [<STATUS_CODE>] Error: <message> | Stack: <stack trace>
+      assert.match(
+        entry,
+        /^\[2026-11-11T10:00:00\.000Z\]\s+\[POST\]\s+\[\/api\/jobs\]\s+\[500\]\s+Error:\s+Database pool exhaustion\s+\|\s+Stack:\s+Error:\s+Database pool exhaustion -> at query/
+      );
+    });
+
+    test('Simulated 500 error in API triggers append to logs/error.log', async () => {
+      // 1. Trigger simulated 500 error via HTTP
+      const uniqueMsg = `Simulated crash token ${Date.now()}`;
+      const res = await apiRequest('GET', `/api/error-test?message=${encodeURIComponent(uniqueMsg)}`);
+      assert.strictEqual(res.statusCode, 500);
+
+      // Wait brief moment for non-blocking file write to complete
+      await new Promise((resolve) => setTimeout(resolve, 50));
+
+      // 2. Read log contents
+      const logContent = await readErrorLog();
+      assert.ok(logContent.length > 0, 'error.log should not be empty');
+      assert.ok(logContent.includes('[GET]'), 'Log entry should include HTTP method');
+      assert.ok(logContent.includes('[500]'), 'Log entry should include status code 500');
+      assert.ok(logContent.includes('/api/error-test'), 'Log entry should include route path');
+      assert.ok(logContent.includes(uniqueMsg), 'Log entry should include unique error message');
+      assert.ok(logContent.includes('Stack:'), 'Log entry should include stack section');
+    });
+
+    test('404 guardian catch appends 404 entry to logs/error.log', async () => {
+      const uniquePath = `/non-existent-guard-test-${Date.now()}`;
+      const res = await apiRequest('GET', uniquePath);
+      assert.strictEqual(res.statusCode, 404);
+
+      await new Promise((resolve) => setTimeout(resolve, 50));
+
+      const logContent = await readErrorLog();
+      assert.ok(logContent.includes('[404]'), 'Log entry should include status code 404');
+      assert.ok(logContent.includes(uniquePath), 'Log entry should include the unmapped route');
+      assert.ok(logContent.includes('Error:'), 'Log entry should record error details');
+    });
+
+    test('appendErrorLog gracefully catches file system errors without crashing', async () => {
+      const originalAppendFile = fs.promises.appendFile;
+      const originalConsoleError = console.error;
+      console.error = () => {};
+
+      try {
+        // Mock write failure (e.g. disk full or EACCES permission denied)
+        fs.promises.appendFile = async () => {
+          throw new Error('EACCES: permission denied, open logs/error.log');
+        };
+
+        const result = await appendErrorLog({
+          method: 'GET',
+          route: '/fail',
+          statusCode: 500,
+          err: new Error('Simulated failure during disk crash'),
+        });
+
+        // Must return null and NOT throw or crash
+        assert.strictEqual(result, null);
+      } finally {
+        fs.promises.appendFile = originalAppendFile;
+        console.error = originalConsoleError;
+      }
+    });
+  });
+
+  /* =========================================================================
+   * TASK 7: Generic 404 Page & Invalid Request Redirection
+   * ========================================================================= */
+  describe('Task 7: Generic 404 Page & Invalid Request Redirection', () => {
+    test('Browser/HTML requests to unknown route return 404 and rendered 404 HTML page', async () => {
+      const res = await request('/unknown-web-page-test', {
+        Accept: 'text/html',
+      });
+
+      assert.strictEqual(res.statusCode, 404);
+      assert.match(res.headers['content-type'], /text\/html/);
+      assert.match(res.body, /<title>Page Not Found \(404\) \| Alumni System<\/title>/);
+      assert.match(res.body, /Page Not Found \(404\) &bull; Route Not Found/);
+      assert.match(res.body, /Go Back to Home/);
+      assert.match(res.body, /Browse Jobs/);
+      assert.match(res.body, /meta http-equiv="refresh" content="5; url=\/jobs"/);
+      assert.match(res.body, /countdown-seconds/);
+      assert.match(res.body, /The requested resource or endpoint 'GET \/unknown-web-page-test' does not exist on this server\./);
+    });
+
+    test('Static 404 page is directly accessible via static middleware at /404.html', async () => {
+      const res = await request('/404.html');
+      assert.strictEqual(res.statusCode, 200);
+      assert.match(res.headers['content-type'], /text\/html/);
+      assert.match(res.body, /Page Not Found \(404\)/);
+      assert.match(res.body, /Browse Jobs/);
+    });
+
+    test('API requests to /api/unknown strictly preserve REST semantics and return 404 JSON', async () => {
+      const res = await apiRequest('GET', '/api/unknown');
+      assert.strictEqual(res.statusCode, 404);
+      assert.match(res.headers['content-type'], /application\/json/);
+
+      const data = res.json();
+      assert.strictEqual(data.status, 'error');
+      assert.strictEqual(data.error, 'Not Found');
+      assert.strictEqual(
+        data.reason,
+        "The requested resource or endpoint 'GET /api/unknown' does not exist on this server."
+      );
+      assert.strictEqual(data.path, '/api/unknown');
+      assert.strictEqual(data.method, 'GET');
+      // Ensure it is JSON and does NOT return HTML
+      assert.ok(!res.body.includes('<!DOCTYPE html>'));
+    });
+
+    test('Requests with X-Requested-With / req.xhr or Accept: application/json receive JSON 404', async () => {
+      const res = await request('/unmapped-client-path', {
+        Accept: 'application/json',
+        'X-Requested-With': 'XMLHttpRequest',
+      });
+
+      assert.strictEqual(res.statusCode, 404);
+      assert.match(res.headers['content-type'], /application\/json/);
+      const data = res.json();
+      assert.strictEqual(data.status, 'error');
+      assert.strictEqual(data.error, 'Not Found');
+      assert.strictEqual(data.path, '/unmapped-client-path');
     });
   });
 });

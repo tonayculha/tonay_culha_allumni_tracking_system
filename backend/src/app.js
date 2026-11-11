@@ -6,10 +6,15 @@ const morgan = require('morgan');
 
 const config = require('./config/env');
 const routes = require('./routes');
-const notFoundHandler = require('./middlewares/notFoundHandler');
-const errorHandler = require('./middlewares/errorHandler');
+const notFoundGuardian = require('./middlewares/notFoundGuardian.middleware');
+const errorGuardian = require('./middlewares/errorGuardian.middleware');
+const { requestLogger } = require('./middlewares/requestLogger.middleware');
 
 const app = express();
+
+// Custom request logger mounted at the very top of the pipeline
+// Captures execution duration across all route handling and static file hits
+app.use(requestLogger);
 
 // Security middleware
 app.use(
@@ -47,10 +52,10 @@ app.use('/css', express.static(path.resolve(__dirname, '../public/css')));
 // Mount application routes
 app.use(routes);
 
-// Catch 404
-app.use(notFoundHandler);
+// Catch 404 with Guardian middleware (after all routes, before errorGuardian)
+app.use(notFoundGuardian);
 
-// Centralized error handler
-app.use(errorHandler);
+// Task 5: 5xx Guardian Middleware (Global Error Handler) - absolute LAST middleware
+app.use(errorGuardian);
 
 module.exports = app;

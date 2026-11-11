@@ -38,14 +38,15 @@ const getJobById = async (req, res, next) => {
  */
 const createJob = async (req, res, next) => {
   try {
-    const { userId, user_id, title, company, location, description } = req.body || {};
+    const { userId, user_id, title, company, location, description, city } = req.body || {};
     const effectiveUserId = userId || user_id;
 
     const job = await jobPostingService.createJobPosting({
       userId: effectiveUserId,
       title,
       company,
-      location,
+      location: city || location,
+      city,
       description,
     });
     return res.status(201).json(job);
@@ -77,13 +78,14 @@ const getUserJobs = async (req, res, next) => {
 const createUserJob = async (req, res, next) => {
   try {
     const userId = req.params.id; // Strictly from path parameter
-    const { title, company, location, description } = req.body || {};
+    const { title, company, location, description, city } = req.body || {};
 
     const job = await jobPostingService.createJobPosting({
       userId,
       title,
       company,
-      location,
+      location: city || location,
+      city,
       description,
     });
     return res.status(201).json(job);
@@ -98,7 +100,8 @@ const createUserJob = async (req, res, next) => {
  */
 const updateJob = async (req, res, next) => {
   try {
-    const updated = await jobPostingService.updateJobPosting(req.params.id, req.body || {});
+    const targetId = req.params.id || req.body?.id;
+    const updated = await jobPostingService.updateJobPosting(targetId, req.body || {});
     return res.status(200).json(updated);
   } catch (error) {
     next(error);

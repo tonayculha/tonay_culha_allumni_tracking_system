@@ -74,14 +74,15 @@ const getJobDetailView = async (req, res, next) => {
  */
 const handleCreateJob = async (req, res, next) => {
   try {
-    const { userId, user_id, title, company, location, description } = req.body || {};
+    const { userId, user_id, title, company, location, description, city } = req.body || {};
     const authorId = userId || user_id;
 
     const newJob = await jobPostingService.createJobPosting({
       userId: authorId,
       title,
       company,
-      location,
+      location: city || location,
+      city,
       description,
     });
 

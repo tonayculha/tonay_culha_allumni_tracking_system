@@ -380,13 +380,16 @@ This API is developed following clean architecture, layered separation of concer
           },
           title: {
             type: 'string',
-            minLength: 2,
+            maxLength: 120,
             example: 'Senior Backend Engineer',
           },
           company: {
             type: 'string',
-            minLength: 2,
             example: 'Google DeepMind',
+          },
+          city: {
+            type: 'string',
+            example: 'London',
           },
           location: {
             type: 'string',
@@ -400,16 +403,20 @@ This API is developed following clean architecture, layered separation of concer
       },
       UpdateJobPostingInput: {
         type: 'object',
+        required: ['title', 'company'],
         properties: {
           title: {
             type: 'string',
-            minLength: 2,
+            maxLength: 120,
             example: 'Staff Backend Engineer',
           },
           company: {
             type: 'string',
-            minLength: 2,
             example: 'Google DeepMind',
+          },
+          city: {
+            type: 'string',
+            example: 'London',
           },
           location: {
             type: 'string',

@@ -1,6 +1,7 @@
 const express = require('express');
 const apiJobPostingController = require('../controllers/apiJobPosting.controller');
 const apiApplicationController = require('../controllers/apiApplication.controller');
+const { validateJobPosting } = require('../middlewares/jobValidation.middleware');
 
 const router = express.Router();
 
@@ -65,7 +66,19 @@ const router = express.Router();
  *               $ref: '#/components/schemas/ErrorResponse'
  */
 router.get('/', apiJobPostingController.getJobs);
-router.post('/', apiJobPostingController.createJob);
+router.post('/', validateJobPosting, apiJobPostingController.createJob);
+router.put('/', validateJobPosting, (req, res, next) => {
+  if (req.body && (req.body.id || req.query.id)) {
+    req.params.id = req.body.id || req.query.id;
+    return apiJobPostingController.updateJob(req, res, next);
+  }
+  return res.status(400).json({
+    status: 'error',
+    error: 'Validation failed',
+    message: 'Job ID is required for update.',
+    details: ['Job ID must be specified in the route path (/api/jobs/:id) or payload.'],
+  });
+});
 
 /**
  * @openapi
@@ -150,7 +163,7 @@ router.post('/', apiJobPostingController.createJob);
  *         description: Job posting not found.
  */
 router.get('/:id', apiJobPostingController.getJobById);
-router.put('/:id', apiJobPostingController.updateJob);
+router.put('/:id', validateJobPosting, apiJobPostingController.updateJob);
 router.delete('/:id', apiJobPostingController.deleteJob);
 
 /**

@@ -33,26 +33,42 @@ function validateJobData(data, isPartial = false) {
   const errors = [];
 
   if (!isPartial || data.title !== undefined) {
-    if (typeof data.title !== 'string' || data.title.trim().length < 2) {
-      errors.push('Field "title" is required and must be at least 2 characters long.');
+    if (data.title === undefined || data.title === null) {
+      errors.push('Field "title" is required.');
+    } else if (typeof data.title !== 'string') {
+      errors.push('Field "title" must be a string.');
+    } else if (data.title.trim().length === 0) {
+      errors.push('Field "title" cannot be empty.');
+    } else if (data.title.trim().length > 120 || data.title.length > 120) {
+      errors.push('Field "title" must not exceed 120 characters.');
     }
   }
 
   if (!isPartial || data.company !== undefined) {
-    if (typeof data.company !== 'string' || data.company.trim().length < 2) {
-      errors.push('Field "company" is required and must be at least 2 characters long.');
+    if (data.company === undefined || data.company === null) {
+      errors.push('Field "company" is required.');
+    } else if (typeof data.company !== 'string') {
+      errors.push('Field "company" must be a string.');
+    } else if (data.company.trim().length === 0) {
+      errors.push('Field "company" cannot be empty.');
+    }
+  }
+
+  if (data.city !== undefined && data.city !== null) {
+    if (typeof data.city !== 'string') {
+      errors.push('Field "city" must be a string if provided.');
     }
   }
 
   if (data.location !== undefined && data.location !== null) {
     if (typeof data.location !== 'string') {
-      errors.push('Field "location" must be a string.');
+      errors.push('Field "location" must be a string if provided.');
     }
   }
 
   if (data.description !== undefined && data.description !== null) {
     if (typeof data.description !== 'string') {
-      errors.push('Field "description" must be a string.');
+      errors.push('Field "description" must be a string if provided.');
     }
   }
 
@@ -112,7 +128,7 @@ class JobPostingService {
    * @param {string} [data.description]
    * @returns {Promise<Object>}
    */
-  async createJobPosting({ userId, title, company, location, description }) {
+  async createJobPosting({ userId, title, company, location, description, city }) {
     if (!userId || typeof userId !== 'string') {
       throw new ValidationError('Field "userId" is required and must be a valid UUID string.');
     }
@@ -122,13 +138,14 @@ class JobPostingService {
       throw new NotFoundError(`User with ID "${userId}" not found`);
     }
 
-    validateJobData({ title, company, location, description }, false);
+    const effectiveLocation = city !== undefined ? city : location;
+    validateJobData({ title, company, location: effectiveLocation, description, city }, false);
 
     return jobPostingModel.create({
       userId,
       title,
       company,
-      location,
+      location: effectiveLocation,
       description,
     });
   }
@@ -141,9 +158,13 @@ class JobPostingService {
    */
   async updateJobPosting(id, data = {}) {
     await this.getJobPostingById(id);
-    validateJobData(data, true);
+    const updatePayload = { ...data };
+    if (updatePayload.city !== undefined && updatePayload.location === undefined) {
+      updatePayload.location = updatePayload.city;
+    }
+    validateJobData(updatePayload, true);
 
-    const updated = await jobPostingModel.update(id, data);
+    const updated = await jobPostingModel.update(id, updatePayload);
     return updated;
   }
 

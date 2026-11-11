@@ -36,4 +36,13 @@ router.use('/', infoRoutes);
 router.use('/hello', greetingRoutes);
 router.use('/sum', mathRoutes);
 
+// Diagnostic/test endpoint for 5xx Guardian HTML rendering
+router.get('/error-test', (req, res, next) => {
+  const err = new Error(req.query.message || 'Simulated runtime server crash');
+  if (req.query.status) {
+    err.status = parseInt(req.query.status, 10);
+  }
+  next(err);
+});
+
 module.exports = router;

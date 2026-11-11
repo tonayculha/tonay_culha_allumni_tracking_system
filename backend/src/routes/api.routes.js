@@ -26,4 +26,13 @@ router.use('/applications', apiApplicationRoutes);
 // Mount Swagger & OpenAPI Documentation under /api/swagger, /api/docs
 router.use('/', swaggerRoutes);
 
+// Intentionally triggered 5xx error endpoint for testing/diagnostic purposes
+router.get('/error-test', (req, res, next) => {
+  const err = new Error(req.query.message || 'Simulated runtime server crash');
+  if (req.query.status) {
+    err.status = parseInt(req.query.status, 10);
+  }
+  next(err);
+});
+
 module.exports = router;

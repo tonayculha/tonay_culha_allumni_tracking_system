@@ -28,6 +28,7 @@ An enterprise-ready, clean-room implementation of the **Alumni Tracking System**
   - [7. Calculation Endpoint (`GET /sum/:num1/:num2`)](#7-calculation-summation)
   - [8. Semantic HTML Views](#8-semantic-html-views)
 - [Database Design & Persistence Documentation (ddd.md)](#-database-design--persistence-documentation-dddmd)
+- [🛡️ Middleware Architecture & Reliability Guardians (Week 7 Milestone)](#️-middleware-architecture--reliability-guardians-week-7-milestone)
 - [Local Development & Testing](#-local-development--testing)
 - [Environment Configuration](#-environment-configuration)
 - [Containerization Details](#-containerization-details)
@@ -552,6 +553,181 @@ The comprehensive database architecture, schema definitions, constraints, index 
 
 ---
 
+## 🛡️ Middleware Architecture & Reliability Guardians (Week 7 Milestone)
+
+To guarantee enterprise robustness, observability, and graceful failure isolation across both REST clients and human browser interactions, the backend implements a clean, layered middleware pipeline:
+
+```
+[ Incoming HTTP Request ]
+          │
+          ▼
+┌──────────────────────────────────────────────┐
+│ 1. Request Logger Middleware (Top of Stack) │  ──► Logs: HH:MM:SS METHOD ROUTE STATUS DURATION
+└──────────────────────┬───────────────────────┘
+                       │
+                       ▼
+┌──────────────────────────────────────────────┐
+│ 2. Security & Parsing (Helmet, CORS, JSON)   │  ──► Intercepts malformed JSON SyntaxErrors (400)
+└──────────────────────┬───────────────────────┘
+                       │
+                       ▼
+┌──────────────────────────────────────────────┐
+│ 3. Static Assets (/public, /css)             │  ──► Serves css, icons, static 404.html
+└──────────────────────┬───────────────────────┘
+                       │
+                       ▼
+┌──────────────────────────────────────────────┐
+│ 4. Route Controllers & Validation Middleware │  ──► validateJobPosting (title, company, city, desc)
+└──────────────────────┬───────────────────────┘
+                       │
+                       ▼
+┌──────────────────────────────────────────────┐
+│ 5. 404 Guardian Catch-All (Pre-Error)        │  ──► REST: JSON { status, error, reason, path, method }
+└──────────────────────┬───────────────────────┘  ──► Web: Renders 404.html + 5s auto-redirect
+                       │
+                       ▼
+┌──────────────────────────────────────────────┐
+│ 6. 5xx Guardian Global Handler (Last Handler)│  ──► REST: JSON { status, error, message, reason, stack }
+└──────────────────────┬───────────────────────┘  ──► Web: Formatted Error 500 HTML view
+                       │
+                       ▼
+┌──────────────────────────────────────────────┐
+│ 7. File-Based Persistent Error Logging       │  ──► Appends to logs/error.log asynchronously
+└──────────────────────────────────────────────┘
+```
+
+### 1. Task 1 & 2: Input Validation Middleware (`jobValidation.middleware.js`)
+Mounted across all job creation and modification routes (`POST /api/jobs`, `PUT /api/jobs/:id`, `POST /api/users/:id/jobs`, `POST /jobs`):
+* **Strict Business Rules**:
+  * `"title"`: String, **REQUIRED**, maximum length **120 characters**, non-empty.
+  * `"company"`: String, **REQUIRED**, non-empty.
+  * `"city"`: Optional string (safely normalized with database `location` column).
+  * `"description"`: Optional string.
+* **Error Payload (`HTTP 400 Bad Request`)**:
+  ```json
+  {
+    "status": "error",
+    "error": "Validation failed",
+    "message": "Validation failed for job posting payload",
+    "details": [
+      "Field \"title\" is required.",
+      "Field \"company\" cannot be empty."
+    ]
+  }
+  ```
+* **Malformed JSON & Type Guard**:
+  Invalid JSON syntax, non-object payloads (arrays, primitives), and missing bodies are caught with HTTP 400 without crashing the Node.js process or throwing unhandled 500 errors.
+
+### 2. Task 3: Monotonic High-Precision Request Logger (`requestLogger.middleware.js`)
+Mounted at the absolute intake of the Express pipeline to measure end-to-end request lifecycle duration:
+* **Timing Mechanism**: Monotonic nanosecond calculation via `process.hrtime.bigint()` recorded at intake and resolved when `res.on('finish')` fires.
+* **Output Format**:
+  ```text
+  <time> <method> <route> <restype> <duration>
+  ```
+  *Example Output:*
+  ```text
+  10:20:32 POST /jobs 201 18ms
+  10:20:33 GET /api/health 200 1ms
+  10:20:35 GET /css/style.css 200 0ms
+  ```
+
+### 3. Task 4: 404 Guardian Middleware (`notFoundGuardian.middleware.js`)
+Positioned immediately after all application routes and before the global error handler:
+* Distinguishes REST API consumers from browser interactions.
+* **API Response (`HTTP 404 Not Found`)**:
+  ```json
+  {
+    "status": "error",
+    "error": "Not Found",
+    "reason": "The requested resource or endpoint 'GET /api/nonexistent' does not exist on this server.",
+    "path": "/api/nonexistent",
+    "method": "GET"
+  }
+  ```
+
+### 4. Task 5: 5xx Guardian Global Error Handler (`errorGuardian.middleware.js`)
+Registered as the absolute **LAST** middleware in Express with exact 4-parameter signature `(err, req, res, next)`:
+* **Error Classification**: Uses `err.status` or `err.statusCode` if set (e.g., 502, 503); defaults strictly to `500 Internal Server Error` for unexpected crashes.
+* **Production Stack Masking**: When `NODE_ENV=production`, stack traces are hidden from JSON responses to prevent path and credential disclosure.
+* **Standardized 5xx JSON Envelope**:
+  ```json
+  {
+    "status": "error",
+    "error": "Internal Server Error",
+    "message": "A server-side error occurred while processing your request.",
+    "reason": "Database connection timeout",
+    "path": "/api/error-test",
+    "method": "GET",
+    "stack": "Error: Database connection timeout\n    at ..."
+  }
+  ```
+* **Terminal Diagnostics**: Emits timestamped diagnostic logs to `console.error` before responding to the client.
+
+### 5. Task 6: Persistent File-Based Error Logging (`fileLogger.js`)
+Asynchronously appends server-side crashes (5xx) and unmapped route catches (404) to persistent disk storage:
+* **File Target**: `backend/logs/error.log` (and root `logs/error.log`).
+* **Format**:
+  ```text
+  [<ISO-Timestamp>] [<METHOD>] [<ROUTE>] [<STATUS_CODE>] Error: <message> | Stack: <stack trace>
+  ```
+* **Hygiene & Safety**:
+  * Non-blocking stream append via `fs.promises.appendFile`.
+  * Safe error boundaries prevent I/O errors from terminating the Node.js process.
+  * Protected by `.gitignore` (`logs/`, `backend/logs/`, `*.log`) so logs are never committed.
+
+### 6. Task 7: Generic 404 Page & Browser Redirection (`views/404.html`, `public/404.html`)
+* **User-Facing 404 Experience**: When human users navigate to unmapped URLs via standard browser navigation (`Accept: text/html`), the server returns HTTP 404 with a semantic HTML view.
+* **Features**:
+  * Display of the requested endpoint reason.
+  * Meta-refresh tag `<meta http-equiv="refresh" content="5; url=/jobs">`.
+  * Client-side JavaScript countdown timer smoothly redirecting users to `/jobs` in 5 seconds.
+  * Navigation shortcuts: `🏠 Go Back to Home` and `💼 Browse Jobs`.
+* **REST Preservation**: Never serves HTML to API clients (`/api/*`, `req.xhr`, or JSON requests).
+
+---
+
+### 🔍 Verification & Local Testing Guide
+
+#### 1. Automated Test Execution
+Run the full automated test suite containing 135 tests across 24 suites:
+```bash
+cd backend
+npm test
+```
+
+#### 2. Manual Verification with Curl / Postman
+
+**A. Job Validation Error (`HTTP 400`)**:
+```bash
+# Title exceeding 120 characters
+curl -i -X POST http://localhost:3000/api/jobs \
+  -H "Content-Type: application/json" \
+  -d '{"title": "'$(printf 'A%.0s' {1..125})'", "company": "Stripe"}'
+```
+
+**B. 404 Guardian API vs Browser**:
+```bash
+# API client receives JSON 404
+curl -i http://localhost:3000/api/nonexistent-endpoint
+
+# Browser receives HTML 404 with 5-second countdown
+curl -i -H "Accept: text/html" http://localhost:3000/some-missing-page
+```
+
+**C. 5xx Guardian Global Error Handler**:
+```bash
+# Trigger diagnostic 500 error
+curl -i http://localhost:3000/api/error-test
+```
+
+**D. Inspect Persistent Error Logs**:
+```bash
+tail -f backend/logs/error.log
+```
+
+---
+
 ## 🧪 Local Development & Testing
 
 Run automated tests directly on your machine:
@@ -563,7 +739,7 @@ npm test
 
 **Test Results**:
 ```text
-✔ Alumni Tracking System API Test Suite (69 tests passed, 0 failures)
+✔ Alumni Tracking System API Test Suite (135 tests passed, 0 failures)
   ✔ Health Check Endpoints (Legacy Root) (2 tests)
   ✔ Parametric Greeting Endpoint (2 tests)
   ✔ Calculation Endpoint (6 tests)
@@ -577,6 +753,16 @@ npm test
   ✔ Week 4 Homework: In-Memory Announcement Model Specification (7 tests)
   ✔ Week 4 Homework: In-Memory Announcement CRUD Operations (/api/announcements) (11 tests)
   ✔ Week 4 Homework: Announcement View Layer (/announcements) (6 tests)
+  ✔ Week 6: Job Postings API & Nested Routing (8 tests)
+  ✔ Week 6: Applications API, Nested Routing & 409 Conflict (10 tests)
+  ✔ Week 6 Homework: Job Postings View Layer (/jobs) (6 tests)
+  ✔ Week 6 Homework: Applications View Layer (/applications) (6 tests)
+  ✔ Tasks 1 & 2: Input Validation & Job Posting Rules (14 tests)
+  ✔ Task 3: Custom Logger Middleware (3 tests)
+  ✔ Task 4: 404 Guardian Middleware (4 tests)
+  ✔ Task 5: 5xx Guardian Middleware (Global Error Handler) (7 tests)
+  ✔ Task 6: File-Based Persistent Error Logging (5 tests)
+  ✔ Task 7: Generic 404 Page & Invalid Request Redirection (4 tests)
 ```
 
 ---

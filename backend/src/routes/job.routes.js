@@ -1,5 +1,7 @@
 const express = require('express');
 const jobController = require('../controllers/job.controller');
+const apiJobPostingController = require('../controllers/apiJobPosting.controller');
+const { validateJobPosting } = require('../middlewares/jobValidation.middleware');
 
 const router = express.Router();
 
@@ -30,7 +32,19 @@ const router = express.Router();
  *         description: Job posting created (AJAX clients).
  */
 router.get('/', jobController.getJobsView);
-router.post('/', jobController.handleCreateJob);
+router.post('/', validateJobPosting, jobController.handleCreateJob);
+router.put('/', validateJobPosting, (req, res, next) => {
+  if (req.body && (req.body.id || req.query.id)) {
+    req.params.id = req.body.id || req.query.id;
+    return apiJobPostingController.updateJob(req, res, next);
+  }
+  return res.status(400).json({
+    status: 'error',
+    error: 'Validation failed',
+    message: 'Job ID is required for update.',
+    details: ['Job ID must be specified in the route path (/jobs/:id) or payload.'],
+  });
+});
 
 /**
  * @openapi
@@ -54,6 +68,7 @@ router.post('/', jobController.handleCreateJob);
  *         description: Redirects to /jobs?view=:id.
  */
 router.get('/:id', jobController.getJobDetailView);
+router.put('/:id', validateJobPosting, apiJobPostingController.updateJob);
 router.post('/:id/delete', jobController.handleDeleteJob);
 router.delete('/:id', jobController.handleDeleteJob);
 
