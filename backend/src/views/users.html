@@ -4,56 +4,68 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Alumni Tracking System | Users</title>
-  <meta name="description" content="Interactive MVC User Management portal with in-memory CRUD operations.">
+  <meta name="description" content="Alumni Hub member directory for managing alumni, student, faculty, and administrator records.">
+  <link rel="stylesheet" href="/css/tokens.css">
   <link rel="stylesheet" href="/css/style.css">
   <!-- INITIAL_USERS_DATA -->
 </head>
 <body>
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+
   <header>
     <div class="nav-container">
-      <a href="/home" class="brand">
-        🎓 Alumni System
-        <span class="brand-badge">Core v1.0</span>
+      <a href="/home" class="brand" aria-label="Alumni Hub Home">
+        <span class="brand-crest" aria-hidden="true">AH</span>
+        <span>Alumni Hub</span>
+        <span class="brand-badge">Network</span>
       </a>
-      <nav>
+      <button type="button" id="nav-toggle" class="nav-toggle" aria-expanded="false" aria-controls="primary-nav" aria-label="Toggle navigation menu">
+        <svg class="icon-lg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <line x1="3" y1="6" x2="21" y2="6"></line>
+          <line x1="3" y1="12" x2="21" y2="12"></line>
+          <line x1="3" y1="18" x2="21" y2="18"></line>
+        </svg>
+      </button>
+      <nav id="primary-nav" class="primary-nav" aria-label="Primary navigation">
         <ul>
           <li><a href="/home">Home</a></li>
-          <li><a href="/users" class="active">Users</a></li>
-          <li><a href="/announcements">Announcements</a></li>
-          <li><a href="/jobs">Jobs</a></li>
+          <li><a href="/users" class="active" aria-current="page">Directory</a></li>
+          <li><a href="/jobs">Opportunities</a></li>
           <li><a href="/applications">Applications</a></li>
+          <li><a href="/announcements">Bulletins</a></li>
           <li><a href="/about">About</a></li>
-          <li><a href="/api/swagger" target="_blank">Swagger Docs</a></li>
-          <li><a href="/api/users" target="_blank">Users API</a></li>
-          <li><a href="/api/health" target="_blank">Health</a></li>
+          <li><a href="/api/swagger" target="_blank" rel="noopener noreferrer">API Docs</a></li>
         </ul>
       </nav>
     </div>
   </header>
 
   <main>
-    <section class="hero" style="padding-bottom: 1.5rem;">
-      <div class="hero-tag">MVC Architecture &bull; In-Memory Data Store</div>
-      <h1>User Directory &amp; Management</h1>
-      <p>
-        Interactive browser-based CRUD management portal connected to the in-memory <code>UserModel</code>. 
-        Create, edit, inspect, and remove alumni records with real-time UI state synchronization.
-      </p>
+    <div id="main-content" tabindex="-1"></div>
+    <section class="page-header" aria-labelledby="users-heading">
+      <div class="page-header-copy">
+        <div class="hero-tag">Alumni Network &bull; Member Directory</div>
+        <h1 id="users-heading">User Directory &amp; Management</h1>
+        <p>
+          Explore and manage verified alumni, current students, faculty members, and campus administrators with instant role filtering and live updates.
+        </p>
+      </div>
       <div class="btn-group">
-        <button id="btnAddUser" class="btn btn-primary" onclick="openCreateModal()">
-          ➕ Add New User
+        <button type="button" id="btnAddUser" class="btn btn-primary">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <line x1="12" y1="5" x2="12" y2="19"></line>
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+          </svg>
+          Add Member
         </button>
-        <a href="/api/users" class="btn btn-secondary" target="_blank">
-          ⚡ Raw JSON API
-        </a>
+        <a href="/api/users" class="btn btn-secondary" target="_blank" rel="noopener noreferrer">JSON API</a>
       </div>
     </section>
 
-    <!-- Metrics Overview -->
-    <section class="stats-grid">
+    <section class="stats-grid" aria-label="Directory metrics">
       <div class="stat-box">
         <div id="stat-total" class="stat-num">0</div>
-        <div class="stat-label">Total Users</div>
+        <div class="stat-label">Total Members</div>
       </div>
       <div class="stat-box">
         <div id="stat-admins" class="stat-num">0</div>
@@ -69,41 +81,41 @@
       </div>
     </section>
 
-    <!-- Interactive Table Card -->
-    <section class="card" style="margin-top: 1rem;">
-      <!-- Toolbar Controls -->
-      <div class="toolbar">
-        <div class="toolbar-left">
-          <input
-            type="text"
-            id="search-input"
-            class="search-input"
-            placeholder="🔍 Search by name or email..."
-            oninput="handleSearch()"
-          />
-          <select id="role-filter" class="filter-select" onchange="handleFilter()">
-            <option value="all">All Roles</option>
-            <option value="admin">Admin</option>
-            <option value="alumni">Alumni</option>
-            <option value="student">Student</option>
-            <option value="faculty">Faculty</option>
-          </select>
-        </div>
-        <div>
-          <button class="btn-sm btn-view" onclick="loadUsers(true)">🔄 Refresh</button>
+    <section class="table-shell" aria-label="Member records">
+      <div class="table-toolbar">
+        <div class="toolbar">
+          <div class="toolbar-left">
+            <label for="search-input" class="sr-only">Search members by name or email</label>
+            <input
+              type="text"
+              id="search-input"
+              class="search-input"
+              placeholder="Search by member name or email..."
+            />
+            <label for="role-filter" class="sr-only">Filter by role</label>
+            <select id="role-filter" class="filter-select">
+              <option value="all">All Roles</option>
+              <option value="admin">Admin</option>
+              <option value="alumni">Alumni</option>
+              <option value="student">Student</option>
+              <option value="faculty">Faculty</option>
+            </select>
+          </div>
+          <div>
+            <button type="button" id="btn-refresh-users" class="btn-sm btn-view">Refresh</button>
+          </div>
         </div>
       </div>
 
-      <!-- Users Table -->
       <div class="table-responsive">
         <table id="users-table">
           <thead>
             <tr>
-              <th>User</th>
+              <th>Member</th>
               <th>Email</th>
               <th>Role</th>
-              <th>Created</th>
-              <th style="text-align: right;">Actions</th>
+              <th>Joined</th>
+              <th class="col-right">Actions</th>
             </tr>
           </thead>
           <tbody id="users-tbody">
@@ -111,181 +123,187 @@
           </tbody>
         </table>
         <div id="empty-state" class="empty-state" style="display: none;">
-          <div class="empty-icon">👥</div>
-          <h3>No users found</h3>
-          <p>No user records matched your search query or filter criteria.</p>
+          <div class="empty-icon" aria-hidden="true">
+            <svg class="icon-lg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+              <circle cx="9" cy="7" r="4"></circle>
+              <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+              <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+            </svg>
+          </div>
+          <h3>No matching members found</h3>
+          <p>Try clearing your role filter or searching with a different name or email address.</p>
         </div>
       </div>
     </section>
   </main>
 
   <footer>
-    <p>&copy; 2026 Alumni Tracking System &bull; MVC In-Memory Implementation &bull; Week 4 In-Class Tasks</p>
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <span class="footer-brand-name">Alumni Hub</span>
+        <span class="footer-tagline">Where Academic Legacy Meets Career Momentum.</span>
+      </div>
+      <div class="footer-links">
+        <a href="/home">Home</a>
+        <a href="/users">Directory</a>
+        <a href="/jobs">Opportunities</a>
+        <a href="/applications">Applications</a>
+        <a href="/announcements">Bulletins</a>
+        <a href="/about">About</a>
+        <a href="/api/swagger" target="_blank" rel="noopener noreferrer">Swagger API</a>
+      </div>
+      <div class="footer-copy">
+        <span>&copy; 2026 Alumni Hub &bull; Powered by Alumni Tracking System</span>
+        <span>Member Directory Portal</span>
+      </div>
+    </div>
   </footer>
 
-  <!-- ========================================================================= -->
   <!-- MODAL: CREATE USER -->
-  <!-- ========================================================================= -->
-  <div id="modalCreateUser" class="modal-overlay" data-modal="create-modal" onclick="handleBackdropClick(event, 'modalCreateUser')">
+  <div id="modalCreateUser" class="modal-overlay" data-modal="create-modal" role="dialog" aria-modal="true" aria-labelledby="modal-create-user-title">
     <div class="modal-dialog">
       <div class="modal-header">
-        <h3 class="modal-title">Create New User</h3>
-        <button class="modal-close" data-close-modal="modalCreateUser" onclick="closeModal('modalCreateUser')">&times;</button>
+        <h3 id="modal-create-user-title" class="modal-title">Add New Member</h3>
+        <button type="button" class="modal-close" data-close-modal="modalCreateUser" aria-label="Close modal">&times;</button>
       </div>
-      <form id="create-user-form" action="/users" method="POST" onsubmit="handleCreateSubmit(event)">
+      <form id="create-user-form" action="/users" method="POST">
         <div class="modal-body">
           <div class="form-group">
-            <label class="form-label" for="create-name">Full Name *</label>
-            <input type="text" id="create-name" name="name" class="form-control" placeholder="e.g. Ada Lovelace" required minlength="2">
+            <label class="form-label" for="create-name">Full Name <span class="form-required">*</span></label>
+            <input type="text" id="create-name" name="name" class="form-control" placeholder="e.g., Ada Lovelace" required minlength="2" aria-required="true">
             <div id="create-name-error" class="form-error"></div>
           </div>
           <div class="form-group">
-            <label class="form-label" for="create-email">Email Address *</label>
-            <input type="email" id="create-email" name="email" class="form-control" placeholder="e.g. ada@alumni.edu" required>
+            <label class="form-label" for="create-email">Email Address <span class="form-required">*</span></label>
+            <input type="email" id="create-email" name="email" class="form-control" placeholder="e.g., ada.lovelace@alumni.edu" required aria-required="true">
             <div id="create-email-error" class="form-error"></div>
           </div>
           <div class="form-group">
-            <label class="form-label" for="create-role">System Role *</label>
-            <select id="create-role" name="role" class="form-control" required>
+            <label class="form-label" for="create-role">Network Role <span class="form-required">*</span></label>
+            <select id="create-role" name="role" class="form-control" required aria-required="true">
               <option value="alumni" selected>Alumni</option>
               <option value="student">Student</option>
               <option value="admin">Administrator</option>
               <option value="faculty">Faculty</option>
             </select>
           </div>
-          <div id="create-general-error" class="form-error" style="display: none; margin-top: 0.5rem;"></div>
+          <div id="create-general-error" class="form-error" role="alert"></div>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn-sm btn-view" data-close-modal="modalCreateUser" onclick="closeModal('modalCreateUser')">Cancel</button>
-          <button type="submit" id="create-submit-btn" class="btn-sm btn-edit" style="background: var(--primary); color: #fff;">
-            Save User
-          </button>
+          <button type="button" class="btn-sm btn-view" data-close-modal="modalCreateUser">Cancel</button>
+          <button type="submit" id="create-submit-btn" class="btn-sm btn-primary">Save Member</button>
         </div>
       </form>
     </div>
   </div>
 
-  <!-- ========================================================================= -->
   <!-- MODAL: EDIT USER -->
-  <!-- ========================================================================= -->
-  <div id="modalEditUser" class="modal-overlay" data-modal="edit-modal" onclick="handleBackdropClick(event, 'modalEditUser')">
+  <div id="modalEditUser" class="modal-overlay" data-modal="edit-modal" role="dialog" aria-modal="true" aria-labelledby="modal-edit-user-title">
     <div class="modal-dialog">
       <div class="modal-header">
-        <h3 class="modal-title">Edit User</h3>
-        <button class="modal-close" data-close-modal="modalEditUser" onclick="closeModal('modalEditUser')">&times;</button>
+        <h3 id="modal-edit-user-title" class="modal-title">Edit Member</h3>
+        <button type="button" class="modal-close" data-close-modal="modalEditUser" aria-label="Close modal">&times;</button>
       </div>
-      <form id="edit-user-form" onsubmit="handleEditSubmit(event)">
+      <form id="edit-user-form">
         <input type="hidden" id="edit-id" name="id">
         <div class="modal-body">
           <div class="form-group">
-            <label class="form-label" for="edit-name">Full Name *</label>
-            <input type="text" id="edit-name" name="name" class="form-control" required minlength="2">
+            <label class="form-label" for="edit-name">Full Name <span class="form-required">*</span></label>
+            <input type="text" id="edit-name" name="name" class="form-control" required minlength="2" aria-required="true">
             <div id="edit-name-error" class="form-error"></div>
           </div>
           <div class="form-group">
-            <label class="form-label" for="edit-email">Email Address *</label>
-            <input type="email" id="edit-email" name="email" class="form-control" required>
+            <label class="form-label" for="edit-email">Email Address <span class="form-required">*</span></label>
+            <input type="email" id="edit-email" name="email" class="form-control" required aria-required="true">
             <div id="edit-email-error" class="form-error"></div>
           </div>
           <div class="form-group">
-            <label class="form-label" for="edit-role">System Role *</label>
-            <select id="edit-role" name="role" class="form-control" required>
+            <label class="form-label" for="edit-role">Network Role <span class="form-required">*</span></label>
+            <select id="edit-role" name="role" class="form-control" required aria-required="true">
               <option value="admin">Administrator</option>
               <option value="alumni">Alumni</option>
               <option value="student">Student</option>
               <option value="faculty">Faculty</option>
             </select>
           </div>
-          <div id="edit-general-error" class="form-error" style="display: none; margin-top: 0.5rem;"></div>
+          <div id="edit-general-error" class="form-error" role="alert"></div>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn-sm btn-view" data-close-modal="modalEditUser" onclick="closeModal('modalEditUser')">Cancel</button>
-          <button type="submit" id="edit-submit-btn" class="btn-sm btn-edit" style="background: var(--primary); color: #fff;">
-            Update User
-          </button>
+          <button type="button" class="btn-sm btn-view" data-close-modal="modalEditUser">Cancel</button>
+          <button type="submit" id="edit-submit-btn" class="btn-sm btn-primary">Update Member</button>
         </div>
       </form>
     </div>
   </div>
 
-  <!-- ========================================================================= -->
   <!-- MODAL: VIEW USER DETAIL -->
-  <!-- ========================================================================= -->
-  <div id="modalViewUser" class="modal-overlay" data-modal="view-modal" onclick="handleBackdropClick(event, 'modalViewUser')">
+  <div id="modalViewUser" class="modal-overlay" data-modal="view-modal" role="dialog" aria-modal="true" aria-labelledby="modal-view-user-title">
     <div class="modal-dialog">
       <div class="modal-header">
-        <h3 class="modal-title">User Details</h3>
-        <button class="modal-close" data-close-modal="modalViewUser" onclick="closeModal('modalViewUser')">&times;</button>
+        <h3 id="modal-view-user-title" class="modal-title">Member Profile</h3>
+        <button type="button" class="modal-close" data-close-modal="modalViewUser" aria-label="Close modal">&times;</button>
       </div>
       <div class="modal-body">
-        <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem;">
-          <div id="view-avatar" class="avatar" style="width: 48px; height: 48px; font-size: 1.2rem;">?</div>
+        <div class="user-cell" style="margin-bottom: var(--space-6);">
+          <div id="view-avatar" class="avatar avatar-lg">?</div>
           <div>
-            <h3 id="view-name" style="color: #fff; font-size: 1.2rem; margin: 0;"></h3>
+            <h3 id="view-name" style="margin: 0 0 0.35rem;"></h3>
             <span id="view-badge" class="badge"></span>
           </div>
         </div>
-        <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+        <div class="detail-list">
           <div>
-            <div class="stat-label">User UUID</div>
-            <code id="view-id" style="font-size: 0.85rem; color: #93c5fd; word-break: break-all;"></code>
+            <div class="stat-label">Member UUID</div>
+            <div class="detail-row-value"><code id="view-id"></code></div>
           </div>
           <div>
             <div class="stat-label">Email Address</div>
-            <div id="view-email" style="color: #e2e8f0; font-size: 0.95rem;"></div>
+            <div id="view-email" class="detail-row-value"></div>
           </div>
           <div>
             <div class="stat-label">Created At</div>
-            <div id="view-created" style="color: var(--text-muted); font-size: 0.9rem;"></div>
+            <div id="view-created" class="detail-row-muted"></div>
           </div>
           <div>
             <div class="stat-label">Last Updated</div>
-            <div id="view-updated" style="color: var(--text-muted); font-size: 0.9rem;"></div>
+            <div id="view-updated" class="detail-row-muted"></div>
           </div>
         </div>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn-sm btn-view" data-close-modal="modalViewUser" onclick="closeModal('modalViewUser')">Close</button>
+        <button type="button" class="btn-sm btn-view" data-close-modal="modalViewUser">Close</button>
       </div>
     </div>
   </div>
 
-  <!-- ========================================================================= -->
   <!-- MODAL: DELETE CONFIRMATION -->
-  <!-- ========================================================================= -->
-  <div id="modalDeleteUser" class="modal-overlay" data-modal="delete-modal" onclick="handleBackdropClick(event, 'modalDeleteUser')">
+  <div id="modalDeleteUser" class="modal-overlay" data-modal="delete-modal" role="dialog" aria-modal="true" aria-labelledby="modal-delete-user-title">
     <div class="modal-dialog">
       <div class="modal-header">
-        <h3 class="modal-title" style="color: #f87171;">Confirm Deletion</h3>
-        <button class="modal-close" data-close-modal="modalDeleteUser" onclick="closeModal('modalDeleteUser')">&times;</button>
+        <h3 id="modal-delete-user-title" class="modal-title modal-title-danger">Remove Member</h3>
+        <button type="button" class="modal-close" data-close-modal="modalDeleteUser" aria-label="Close modal">&times;</button>
       </div>
       <div class="modal-body">
-        <p>Are you sure you want to delete user <strong id="delete-user-name" style="color: #fff;"></strong>?</p>
-        <p style="color: var(--text-muted); font-size: 0.85rem; margin-top: 0.5rem;">
-          This record will be permanently purged from the in-memory data store.
+        <p>Are you sure you want to remove <strong id="delete-user-name" class="cell-primary"></strong> from the directory?</p>
+        <p class="detail-row-muted" style="margin-top: var(--space-2);">
+          This action permanently deletes the member record and cannot be undone.
         </p>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn-sm btn-view" data-close-modal="modalDeleteUser" onclick="closeModal('modalDeleteUser')">Cancel</button>
-        <button type="button" id="confirm-delete-btn" class="btn-sm btn-delete" onclick="executeDelete()">
-          🗑️ Delete Record
-        </button>
+        <button type="button" class="btn-sm btn-view" data-close-modal="modalDeleteUser">Cancel</button>
+        <button type="button" id="confirm-delete-btn" class="btn-sm btn-danger">Delete Member</button>
       </div>
     </div>
   </div>
 
-  <!-- Toast Notification Container -->
-  <div id="toast-container" class="toast-container"></div>
+  <div id="toast-container" class="toast-container" role="status" aria-live="polite"></div>
 
-  <!-- ========================================================================= -->
-  <!-- CLIENT LOGIC & REACTIVE IN-MEMORY CRUD -->
-  <!-- ========================================================================= -->
+  <script src="/js/nav.js"></script>
   <script>
-    // State
     let usersList = [];
     let pendingDeleteId = null;
 
-    // Helper: Formatter for roles
     function getRoleBadgeClass(role) {
       const normalized = (role || '').toLowerCase();
       if (normalized === 'admin') return 'badge-admin';
@@ -318,22 +336,37 @@
       }
     }
 
-    // Toast notifications
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
     function showToast(message, type = 'success') {
       const container = document.getElementById('toast-container');
       const toast = document.createElement('div');
       toast.className = `toast ${type === 'success' ? 'toast-success' : 'toast-error'}`;
-      toast.innerHTML = `<span>${type === 'success' ? '✅' : '⚠️'}</span><span>${message}</span>`;
+      const badge = document.createElement('span');
+      badge.className = 'toast-badge';
+      badge.setAttribute('aria-hidden', 'true');
+      badge.textContent = type === 'success' ? '✓' : '!';
+      const msg = document.createElement('span');
+      msg.textContent = message;
+      toast.appendChild(badge);
+      toast.appendChild(msg);
       container.appendChild(toast);
       setTimeout(() => {
         toast.style.opacity = '0';
-        toast.style.transform = 'translateY(10px)';
-        toast.style.transition = 'all 0.3s ease';
-        setTimeout(() => toast.remove(), 300);
-      }, 3500);
+        toast.style.transform = 'translateY(8px)';
+        toast.style.transition = 'opacity 200ms ease, transform 200ms ease';
+        setTimeout(() => toast.remove(), 220);
+      }, 3800);
     }
 
-    // Modal helpers with bidirectional ID resolution
     function resolveModal(id) {
       if (!id) return null;
       let modal = document.getElementById(id);
@@ -358,8 +391,7 @@
     function openModal(id) {
       const modal = resolveModal(id);
       if (modal) {
-        modal.classList.add('open');
-        modal.classList.add('active');
+        modal.classList.add('open', 'active');
         document.body.style.overflow = 'hidden';
       }
     }
@@ -367,15 +399,16 @@
     function closeModal(id) {
       const modal = resolveModal(id);
       if (modal) {
-        modal.classList.remove('open');
-        modal.classList.remove('active');
+        modal.classList.remove('open', 'active');
         document.body.style.overflow = '';
       }
     }
 
-    function handleBackdropClick(event, modalId) {
-      if (event.target.id === modalId || event.target.dataset.modal === modalId) {
-        closeModal(modalId);
+    function hideErrors(prefix) {
+      const general = document.getElementById(`${prefix}-general-error`);
+      if (general) {
+        general.textContent = '';
+        general.style.display = 'none';
       }
     }
 
@@ -387,18 +420,9 @@
       setTimeout(() => {
         const input = document.getElementById('create-name');
         if (input) input.focus();
-      }, 100);
+      }, 80);
     }
 
-    function hideErrors(prefix) {
-      const general = document.getElementById(`${prefix}-general-error`);
-      if (general) {
-        general.textContent = '';
-        general.style.display = 'none';
-      }
-    }
-
-    // Stats recalculation
     function updateStats() {
       document.getElementById('stat-total').textContent = usersList.length;
       document.getElementById('stat-admins').textContent = usersList.filter(u => (u.role || '').toLowerCase() === 'admin').length;
@@ -406,7 +430,6 @@
       document.getElementById('stat-students').textContent = usersList.filter(u => (u.role || '').toLowerCase() === 'student').length;
     }
 
-    // Table rendering
     function renderTable(usersToRender) {
       const tbody = document.getElementById('users-tbody');
       const emptyState = document.getElementById('empty-state');
@@ -425,13 +448,14 @@
       usersToRender.forEach(user => {
         const tr = document.createElement('tr');
         tr.id = `user-row-${user.id}`;
+        const safeName = escapeHtml(user.name);
         tr.innerHTML = `
           <td>
             <div class="user-cell">
-              <div class="avatar">${getInitials(user.name)}</div>
+              <div class="avatar" aria-hidden="true">${escapeHtml(getInitials(user.name))}</div>
               <div>
-                <div class="user-name">${escapeHtml(user.name)}</div>
-                <div class="user-meta">${user.id.slice(0, 8)}...</div>
+                <div class="user-name">${safeName}</div>
+                <div class="user-meta">${escapeHtml(String(user.id || '').slice(0, 8))}...</div>
               </div>
             </div>
           </td>
@@ -439,12 +463,12 @@
           <td>
             <span class="badge ${getRoleBadgeClass(user.role)}">${escapeHtml(user.role)}</span>
           </td>
-          <td>${formatDate(user.createdAt)}</td>
-          <td style="text-align: right;">
-            <div class="action-group" style="justify-content: flex-end;">
-              <button class="btn-sm btn-view" title="Inspect User" data-action="view" data-id="${user.id}" onclick="viewUser('${user.id}')">View</button>
-              <button class="btn-sm btn-edit" title="Edit User" data-action="edit" data-id="${user.id}" onclick="openEditModal('${user.id}')">Edit</button>
-              <button class="btn-sm btn-delete" title="Delete User" data-action="delete" data-id="${user.id}" data-name="${escapeHtml(user.name)}" onclick="promptDelete('${user.id}', '${escapeHtml(user.name)}')">Delete</button>
+          <td class="cell-mono">${escapeHtml(formatDate(user.createdAt))}</td>
+          <td class="col-right">
+            <div class="action-group action-group-end">
+              <button type="button" class="btn-sm btn-view" data-action="view" data-id="${escapeHtml(user.id)}" aria-label="View ${safeName}">View</button>
+              <button type="button" class="btn-sm btn-edit" data-action="edit" data-id="${escapeHtml(user.id)}" aria-label="Edit ${safeName}">Edit</button>
+              <button type="button" class="btn-sm btn-delete" data-action="delete" data-id="${escapeHtml(user.id)}" data-name="${safeName}" aria-label="Delete ${safeName}">Delete</button>
             </div>
           </td>
         `;
@@ -452,23 +476,12 @@
       });
     }
 
-    function escapeHtml(str) {
-      if (!str) return '';
-      return String(str)
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;')
-        .replace(/'/g, '&#039;');
-    }
-
-    // Filter & Search handler
     function applyFilters() {
       const query = (document.getElementById('search-input').value || '').trim().toLowerCase();
       const roleFilter = document.getElementById('role-filter').value;
 
       const filtered = usersList.filter(user => {
-        const matchesQuery = !query || 
+        const matchesQuery = !query ||
           (user.name && user.name.toLowerCase().includes(query)) ||
           (user.email && user.email.toLowerCase().includes(query));
         const matchesRole = roleFilter === 'all' || (user.role && user.role.toLowerCase() === roleFilter.toLowerCase());
@@ -478,15 +491,6 @@
       renderTable(filtered);
     }
 
-    function handleSearch() {
-      applyFilters();
-    }
-
-    function handleFilter() {
-      applyFilters();
-    }
-
-    // Load initial users
     function loadUsers(forceFetch = false) {
       const initialScript = document.getElementById('initial-users-data');
       if (!forceFetch && initialScript && initialScript.textContent) {
@@ -509,11 +513,10 @@
         })
         .catch(err => {
           console.error('Failed to fetch users', err);
-          showToast('Failed to load users from API', 'error');
+          showToast('Unable to load members from the directory API.', 'error');
         });
     }
 
-    // View User Details
     function viewUser(id) {
       const user = usersList.find(u => u.id === id);
       if (!user) return;
@@ -530,7 +533,6 @@
       openModal('modalViewUser');
     }
 
-    // Open Edit Modal
     function openEditModal(id) {
       const user = usersList.find(u => u.id === id);
       if (!user) return;
@@ -544,7 +546,6 @@
       openModal('modalEditUser');
     }
 
-    // Create User Form Submit (AJAX)
     function handleCreateSubmit(event) {
       if (event) event.preventDefault();
       const name = document.getElementById('create-name').value.trim();
@@ -559,7 +560,7 @@
         return;
       }
       if (!email || !email.includes('@')) {
-        errBox.textContent = 'Please provide a valid email address.';
+        errBox.textContent = 'Enter a valid email address, such as name@alumni.edu.';
         errBox.style.display = 'block';
         return;
       }
@@ -573,33 +574,32 @@
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ name, email, role })
       })
-      .then(async res => {
-        const data = await res.json();
-        if (!res.ok) {
-          throw new Error(data.message || (data.details ? data.details.join(', ') : 'Failed to create user'));
-        }
-        return data;
-      })
-      .then(newUser => {
-        usersList.push(newUser);
-        updateStats();
-        applyFilters();
-        closeModal('modalCreateUser');
-        const form = document.getElementById('create-user-form');
-        if (form) form.reset();
-        showToast(`User "${newUser.name}" successfully created!`);
-      })
-      .catch(err => {
-        errBox.textContent = err.message;
-        errBox.style.display = 'block';
-      })
-      .finally(() => {
-        submitBtn.disabled = false;
-        submitBtn.textContent = 'Save User';
-      });
+        .then(async res => {
+          const data = await res.json();
+          if (!res.ok) {
+            throw new Error(data.message || (data.details ? data.details.join(', ') : 'Failed to create member'));
+          }
+          return data;
+        })
+        .then(newUser => {
+          usersList.push(newUser);
+          updateStats();
+          applyFilters();
+          closeModal('modalCreateUser');
+          const form = document.getElementById('create-user-form');
+          if (form) form.reset();
+          showToast(`Member "${newUser.name}" added to directory.`);
+        })
+        .catch(err => {
+          errBox.textContent = err.message;
+          errBox.style.display = 'block';
+        })
+        .finally(() => {
+          submitBtn.disabled = false;
+          submitBtn.textContent = 'Save Member';
+        });
     }
 
-    // Edit User Form Submit (AJAX)
     function handleEditSubmit(event) {
       if (event) event.preventDefault();
       const id = document.getElementById('edit-id').value;
@@ -618,41 +618,39 @@
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ name, email, role })
       })
-      .then(async res => {
-        const data = await res.json();
-        if (!res.ok) {
-          throw new Error(data.message || (data.details ? data.details.join(', ') : 'Failed to update user'));
-        }
-        return data;
-      })
-      .then(updatedUser => {
-        const index = usersList.findIndex(u => u.id === id);
-        if (index !== -1) {
-          usersList[index] = updatedUser;
-        }
-        updateStats();
-        applyFilters();
-        closeModal('modalEditUser');
-        showToast(`User "${updatedUser.name}" successfully updated!`);
-      })
-      .catch(err => {
-        errBox.textContent = err.message;
-        errBox.style.display = 'block';
-      })
-      .finally(() => {
-        submitBtn.disabled = false;
-        submitBtn.textContent = 'Update User';
-      });
+        .then(async res => {
+          const data = await res.json();
+          if (!res.ok) {
+            throw new Error(data.message || (data.details ? data.details.join(', ') : 'Failed to update member'));
+          }
+          return data;
+        })
+        .then(updatedUser => {
+          const index = usersList.findIndex(u => u.id === id);
+          if (index !== -1) {
+            usersList[index] = updatedUser;
+          }
+          updateStats();
+          applyFilters();
+          closeModal('modalEditUser');
+          showToast(`Member "${updatedUser.name}" updated.`);
+        })
+        .catch(err => {
+          errBox.textContent = err.message;
+          errBox.style.display = 'block';
+        })
+        .finally(() => {
+          submitBtn.disabled = false;
+          submitBtn.textContent = 'Update Member';
+        });
     }
 
-    // Delete Prompt
     function promptDelete(id, name) {
       pendingDeleteId = id;
       document.getElementById('delete-user-name').textContent = name;
       openModal('modalDeleteUser');
     }
 
-    // Execute Delete
     function executeDelete() {
       if (!pendingDeleteId) return;
       const id = pendingDeleteId;
@@ -664,7 +662,7 @@
         .then(async res => {
           if (!res.ok) {
             const data = await res.json();
-            throw new Error(data.message || 'Failed to delete user');
+            throw new Error(data.message || 'Failed to delete member');
           }
           return res.json();
         })
@@ -673,7 +671,7 @@
           updateStats();
           applyFilters();
           closeModal('modalDeleteUser');
-          showToast('User record removed successfully.');
+          showToast('Member removed from directory.');
         })
         .catch(err => {
           showToast(err.message, 'error');
@@ -681,13 +679,11 @@
         .finally(() => {
           pendingDeleteId = null;
           deleteBtn.disabled = false;
-          deleteBtn.textContent = '🗑️ Delete Record';
+          deleteBtn.textContent = 'Delete Member';
         });
     }
 
-    // Attach Clean DOM Event Listeners
     function attachEventListeners() {
-      // Primary "Add New User" button
       const btnAdd = document.getElementById('btnAddUser') || document.getElementById('open-create-btn');
       if (btnAdd) {
         btnAdd.addEventListener('click', (e) => {
@@ -696,19 +692,21 @@
         });
       }
 
-      // Create form submit
+      const btnRefresh = document.getElementById('btn-refresh-users');
+      if (btnRefresh) {
+        btnRefresh.addEventListener('click', () => loadUsers(true));
+      }
+
       const createForm = document.getElementById('create-user-form');
       if (createForm) {
         createForm.addEventListener('submit', handleCreateSubmit);
       }
 
-      // Edit form submit
       const editForm = document.getElementById('edit-user-form');
       if (editForm) {
         editForm.addEventListener('submit', handleEditSubmit);
       }
 
-      // Confirm delete button
       const confirmDeleteBtn = document.getElementById('confirm-delete-btn');
       if (confirmDeleteBtn) {
         confirmDeleteBtn.addEventListener('click', (e) => {
@@ -717,18 +715,16 @@
         });
       }
 
-      // Live search and filter controls
       const searchInput = document.getElementById('search-input');
       if (searchInput) {
-        searchInput.addEventListener('input', handleSearch);
+        searchInput.addEventListener('input', applyFilters);
       }
 
       const roleFilter = document.getElementById('role-filter');
       if (roleFilter) {
-        roleFilter.addEventListener('change', handleFilter);
+        roleFilter.addEventListener('change', applyFilters);
       }
 
-      // Table Action Delegated Click Listener (View, Edit, Delete)
       const tbody = document.getElementById('users-tbody');
       if (tbody) {
         tbody.addEventListener('click', (e) => {
@@ -747,12 +743,9 @@
         });
       }
 
-      // Modal close buttons & Cancel buttons
       document.querySelectorAll('.modal-overlay').forEach(overlay => {
         overlay.addEventListener('click', (e) => {
-          if (e.target === overlay) {
-            closeModal(overlay.id);
-          }
+          if (e.target === overlay) closeModal(overlay.id);
         });
       });
 
@@ -770,16 +763,15 @@
       });
     }
 
-    // Check URL parameters for server-side redirects (e.g. from standard form POST)
     window.addEventListener('DOMContentLoaded', () => {
       attachEventListeners();
       loadUsers();
 
       const urlParams = new URLSearchParams(window.location.search);
       if (urlParams.get('status') === 'created') {
-        showToast('New user successfully created via form POST!');
+        showToast('Member added to directory.');
       } else if (urlParams.get('status') === 'deleted') {
-        showToast('User record successfully deleted!');
+        showToast('Member removed from directory.');
       } else if (urlParams.get('error')) {
         showToast(decodeURIComponent(urlParams.get('error')), 'error');
       } else if (urlParams.get('view')) {

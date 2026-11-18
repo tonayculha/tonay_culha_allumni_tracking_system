@@ -4,119 +4,288 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Alumni Tracking System | Home</title>
-  <meta name="description" content="Clean-room modular Alumni Tracking System coursework platform.">
+  <meta name="description" content="Alumni Hub connects university graduates, students, and partner recruiters through verified career opportunities, transparent application tracking, and campus bulletins.">
+  <link rel="stylesheet" href="/css/tokens.css">
   <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+
   <header>
     <div class="nav-container">
-      <a href="/home" class="brand">
-        🎓 Alumni System
-        <span class="brand-badge">Core v1.0</span>
+      <a href="/home" class="brand" aria-label="Alumni Hub Home">
+        <span class="brand-crest" aria-hidden="true">AH</span>
+        <span>Alumni Hub</span>
+        <span class="brand-badge">Network</span>
       </a>
-      <nav>
+      <button type="button" id="nav-toggle" class="nav-toggle" aria-expanded="false" aria-controls="primary-nav" aria-label="Toggle navigation menu">
+        <svg class="icon-lg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <line x1="3" y1="6" x2="21" y2="6"></line>
+          <line x1="3" y1="12" x2="21" y2="12"></line>
+          <line x1="3" y1="18" x2="21" y2="18"></line>
+        </svg>
+      </button>
+      <nav id="primary-nav" class="primary-nav" aria-label="Primary navigation">
         <ul>
-          <li><a href="/home" class="active">Home</a></li>
-          <li><a href="/users">Users</a></li>
-          <li><a href="/announcements">Announcements</a></li>
-          <li><a href="/jobs">Jobs</a></li>
+          <li><a href="/home" class="active" aria-current="page">Home</a></li>
+          <li><a href="/users">Directory</a></li>
+          <li><a href="/jobs">Opportunities</a></li>
           <li><a href="/applications">Applications</a></li>
+          <li><a href="/announcements">Bulletins</a></li>
           <li><a href="/about">About</a></li>
-          <li><a href="/api/swagger" target="_blank">Swagger Docs</a></li>
-          <li><a href="/api/health" target="_blank">Health</a></li>
+          <li><a href="/api/swagger" target="_blank" rel="noopener noreferrer">API Docs</a></li>
         </ul>
       </nav>
     </div>
   </header>
 
   <main>
-    <section class="hero">
-      <div class="hero-tag">Coursework Clean-Room Implementation &bull; Week 3 Ready</div>
-      <h1>Alumni Tracking System</h1>
-      <p>
-        An enterprise-ready, containerized Node.js service engineered with strict modular layering, 
-        OpenAPI 3.0 Swagger interactive documentation, thread-safe in-memory user CRUD operations, and clean architecture.
-      </p>
-      <div class="btn-group">
-        <a href="/api/swagger" class="btn btn-primary" target="_blank">Interactive Swagger Docs</a>
-        <a href="/api/users" class="btn btn-secondary" target="_blank">Explore Users (In-Memory)</a>
+    <div id="main-content" tabindex="-1"></div>
+    <section class="hero-split hero-display" aria-labelledby="hero-heading">
+      <div>
+        <div class="hero-tag">Verified Institutional Career Network</div>
+        <h1 id="hero-heading">Where Academic Legacy Meets <span class="accent">Career Momentum</span>.</h1>
+        <p class="lead">
+          Alumni Hub unites graduates, current students, and partner recruiters in one structured portal.
+          Publish trusted opportunities, monitor applications transparently, and stay aligned with official campus bulletins.
+        </p>
+        <div class="btn-group">
+          <a href="/jobs" class="btn btn-primary">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <rect x="2" y="7" width="20" height="14" rx="2"></rect>
+              <path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"></path>
+            </svg>
+            Browse Open Roles
+          </a>
+          <a href="/users" class="btn btn-secondary">Open Directory</a>
+          <a href="/api/swagger" class="btn btn-ghost" target="_blank" rel="noopener noreferrer">OpenAPI Explorer</a>
+        </div>
+      </div>
+
+      <aside class="pulse-panel" aria-label="Live network overview">
+        <div class="pulse-header">
+          <span class="pulse-title">Network Pulse</span>
+          <span id="pulse-health-status" class="status-indicator">System Operational</span>
+        </div>
+        <div class="pulse-metrics">
+          <div class="pulse-metric">
+            <div id="pulse-members" class="pulse-metric-val">4</div>
+            <div class="pulse-metric-label">Directory Members</div>
+          </div>
+          <div class="pulse-metric">
+            <div id="pulse-jobs" class="pulse-metric-val">Active</div>
+            <div class="pulse-metric-label">Open Opportunities</div>
+          </div>
+          <div class="pulse-metric">
+            <div id="pulse-apps" class="pulse-metric-val">Tracked</div>
+            <div class="pulse-metric-label">Candidate Applications</div>
+          </div>
+          <div class="pulse-metric">
+            <div id="pulse-bulletins" class="pulse-metric-val">3</div>
+            <div class="pulse-metric-label">Campus Bulletins</div>
+          </div>
+        </div>
+        <div class="endpoint-list">
+          <a href="/jobs" class="endpoint-item">
+            <span class="endpoint-left">
+              <span class="endpoint-method">VIEW</span>
+              <span class="endpoint-path">/jobs</span>
+            </span>
+            <span class="endpoint-desc">Career Board</span>
+          </a>
+          <a href="/applications" class="endpoint-item">
+            <span class="endpoint-left">
+              <span class="endpoint-method">VIEW</span>
+              <span class="endpoint-path">/applications</span>
+            </span>
+            <span class="endpoint-desc">Pipeline Tracker</span>
+          </a>
+          <a href="/announcements" class="endpoint-item">
+            <span class="endpoint-left">
+              <span class="endpoint-method">VIEW</span>
+              <span class="endpoint-path">/announcements</span>
+            </span>
+            <span class="endpoint-desc">Official Notices</span>
+          </a>
+        </div>
+      </aside>
+    </section>
+
+    <section class="page-section" aria-labelledby="personas-heading">
+      <div class="section-header">
+        <div>
+          <div class="section-kicker">Built for Our Community</div>
+          <h2 id="personas-heading">Focused Workflows for Every Network Role</h2>
+          <p>Purpose-built portals serving graduates giving back, students launching careers, and partners hiring vetted talent.</p>
+        </div>
+      </div>
+
+      <div class="grid-3">
+        <article class="card card-interactive">
+          <div>
+            <div class="card-icon card-icon-gold" aria-hidden="true">
+              <svg class="icon-lg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M22 10v6M2 10l10-5 10 5-10 5z"></path>
+                <path d="M6 12v5c0 2 3 3 6 3s6-1 6-3v-5"></path>
+              </svg>
+            </div>
+            <div class="section-kicker">For Alumni</div>
+            <h3>Mentor &amp; Hire Trusted Talent</h3>
+            <p>
+              Publish open roles from your engineering or research teams directly to verified graduates and senior students in under a minute.
+            </p>
+          </div>
+          <a href="/jobs" class="card-link">Publish an Opportunity &rarr;</a>
+        </article>
+
+        <article class="card card-interactive">
+          <div>
+            <div class="card-icon" aria-hidden="true">
+              <svg class="icon-lg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 20h9"></path>
+                <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+              </svg>
+            </div>
+            <div class="section-kicker">For Students</div>
+            <h3>Launch Your Career Clearly</h3>
+            <p>
+              Filter alumni-authored roles by work mode, apply cleanly with built-in duplicate safeguards, and monitor every stage from applied to accepted.
+            </p>
+          </div>
+          <a href="/applications" class="card-link">Track My Applications &rarr;</a>
+        </article>
+
+        <article class="card card-interactive">
+          <div>
+            <div class="card-icon card-icon-success" aria-hidden="true">
+              <svg class="icon-lg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                <circle cx="9" cy="7" r="4"></circle>
+                <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+              </svg>
+            </div>
+            <div class="section-kicker">For Recruiters</div>
+            <h3>Structured Talent Pipelines</h3>
+            <p>
+              Manage validated listings, audit duplicate-free candidate pipelines by status, and broadcast career fairs via official campus bulletins.
+            </p>
+          </div>
+          <a href="/announcements" class="card-link">View Campus Bulletins &rarr;</a>
+        </article>
       </div>
     </section>
 
-    <section class="grid-3">
-      <article class="card">
-        <div class="card-icon">⚡</div>
-        <h3>Modular Layered Architecture</h3>
-        <p>
-          Routes, controllers, services, repositories, and configs are strictly decoupled for enterprise testability and clean separation of concerns.
-        </p>
-      </article>
-
-      <article class="card">
-        <div class="card-icon">📖</div>
-        <h3>Swagger / OpenAPI 3.0</h3>
-        <p>
-          Full interactive Swagger UI at <code>/api/swagger</code> and <code>/api/docs</code> documenting all schemas, parameters, and live execution.
-        </p>
-      </article>
-
-      <article class="card">
-        <div class="card-icon">🧠</div>
-        <h3>In-Memory Data Store</h3>
-        <p>
-          Thread-safe collection service with deep-cloning immutability, seed records, and full CRUD operations without database dependencies for Week 3.
-        </p>
-      </article>
-    </section>
-
-    <section class="api-section">
-      <h2>Interactive Endpoint Explorer</h2>
-      <div class="endpoint-list">
-        <div class="endpoint-item">
-          <div>
-            <span class="endpoint-method">GET</span>
-            <a href="/api/swagger" class="endpoint-path" target="_blank">/api/swagger</a>
-          </div>
-          <span class="endpoint-desc">Interactive Swagger OpenAPI documentation UI</span>
+    <section class="page-section" aria-labelledby="api-heading">
+      <div class="section-header">
+        <div>
+          <div class="section-kicker">Developer &amp; Integration Surface</div>
+          <h2 id="api-heading">Interactive Endpoint Explorer</h2>
+          <p>Every portal is backed by versioned REST endpoints documented in OpenAPI 3.0 with deterministic health telemetry.</p>
         </div>
+        <a href="/about" class="btn btn-secondary btn-sm">Architecture Specs</a>
+      </div>
 
-        <div class="endpoint-item">
-          <div>
-            <span class="endpoint-method">GET</span>
-            <a href="/api/users" class="endpoint-path" target="_blank">/api/users</a>
+      <div class="api-section">
+        <div class="endpoint-list">
+          <div class="endpoint-item">
+            <div class="endpoint-left">
+              <span class="endpoint-method">GET</span>
+              <a href="/api/swagger" class="endpoint-path" target="_blank" rel="noopener noreferrer">/api/swagger</a>
+            </div>
+            <span class="endpoint-desc">Interactive Swagger OpenAPI 3.0 documentation UI</span>
           </div>
-          <span class="endpoint-desc">Retrieve array of all users from in-memory collection</span>
-        </div>
 
-        <div class="endpoint-item">
-          <div>
-            <span class="endpoint-method">GET</span>
-            <a href="/api/health" class="endpoint-path" target="_blank">/api/health</a>
+          <div class="endpoint-item">
+            <div class="endpoint-left">
+              <span class="endpoint-method">GET</span>
+              <a href="/api/users" class="endpoint-path" target="_blank" rel="noopener noreferrer">/api/users</a>
+            </div>
+            <span class="endpoint-desc">List all registered members across alumni, student, faculty, and admin roles</span>
           </div>
-          <span class="endpoint-desc">Live JSON uptime, system diagnostics & DB ping</span>
-        </div>
 
-        <div class="endpoint-item">
-          <div>
-            <span class="endpoint-method">GET</span>
-            <a href="/hello/Developer" class="endpoint-path" target="_blank">/hello/:name</a>
+          <div class="endpoint-item">
+            <div class="endpoint-left">
+              <span class="endpoint-method">GET</span>
+              <a href="/api/jobs" class="endpoint-path" target="_blank" rel="noopener noreferrer">/api/jobs</a>
+            </div>
+            <span class="endpoint-desc">Retrieve relational job postings authored by alumni and partner recruiters</span>
           </div>
-          <span class="endpoint-desc">Parametric greeting with sanitized URL inputs</span>
-        </div>
 
-        <div class="endpoint-item">
-          <div>
-            <span class="endpoint-method">GET</span>
-            <a href="/sum/15/27" class="endpoint-path" target="_blank">/sum/15/27</a>
+          <div class="endpoint-item">
+            <div class="endpoint-left">
+              <span class="endpoint-method">GET</span>
+              <a href="/api/applications" class="endpoint-path" target="_blank" rel="noopener noreferrer">/api/applications</a>
+            </div>
+            <span class="endpoint-desc">Inspect candidate applications with unique constraint 409 Conflict guard</span>
           </div>
-          <span class="endpoint-desc">Strict numeric calculation (returns JSON { result: 42 })</span>
+
+          <div class="endpoint-item">
+            <div class="endpoint-left">
+              <span class="endpoint-method">GET</span>
+              <a href="/api/announcements" class="endpoint-path" target="_blank" rel="noopener noreferrer">/api/announcements</a>
+            </div>
+            <span class="endpoint-desc">Query campus bulletins with optional category and priority filters</span>
+          </div>
+
+          <div class="endpoint-item">
+            <div class="endpoint-left">
+              <span class="endpoint-method">GET</span>
+              <a href="/api/health" class="endpoint-path" target="_blank" rel="noopener noreferrer">/api/health</a>
+            </div>
+            <span class="endpoint-desc">Live JSON uptime, runtime diagnostics, and PostgreSQL connectivity probe</span>
+          </div>
         </div>
       </div>
     </section>
   </main>
 
   <footer>
-    <p>&copy; 2026 Alumni Tracking System Core Team. Built for strict coursework adherence and production readiness.</p>
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <span class="footer-brand-name">Alumni Hub</span>
+        <span class="footer-tagline">Where Academic Legacy Meets Career Momentum.</span>
+      </div>
+      <div class="footer-links">
+        <a href="/home">Home</a>
+        <a href="/users">Directory</a>
+        <a href="/jobs">Opportunities</a>
+        <a href="/applications">Applications</a>
+        <a href="/announcements">Bulletins</a>
+        <a href="/about">About</a>
+        <a href="/api/swagger" target="_blank" rel="noopener noreferrer">Swagger API</a>
+        <a href="/api/health" target="_blank" rel="noopener noreferrer">Health</a>
+      </div>
+      <div class="footer-copy">
+        <span>&copy; 2026 Alumni Hub &bull; Powered by Alumni Tracking System</span>
+        <span>Collegiate Obsidian Design System &bull; WCAG 2.1 AA</span>
+      </div>
+    </div>
   </footer>
+
+  <script src="/js/nav.js"></script>
+  <script>
+    window.addEventListener('DOMContentLoaded', () => {
+      Promise.allSettled([
+        fetch('/api/users').then((r) => (r.ok ? r.json() : null)),
+        fetch('/api/jobs').then((r) => (r.ok ? r.json() : null)),
+        fetch('/api/applications').then((r) => (r.ok ? r.json() : null)),
+        fetch('/api/announcements').then((r) => (r.ok ? r.json() : null)),
+      ]).then(([usersRes, jobsRes, appsRes, annRes]) => {
+        if (usersRes.status === 'fulfilled' && Array.isArray(usersRes.value)) {
+          document.getElementById('pulse-members').textContent = usersRes.value.length;
+        }
+        if (jobsRes.status === 'fulfilled' && Array.isArray(jobsRes.value)) {
+          document.getElementById('pulse-jobs').textContent = jobsRes.value.length;
+        }
+        if (appsRes.status === 'fulfilled' && Array.isArray(appsRes.value)) {
+          document.getElementById('pulse-apps').textContent = appsRes.value.length;
+        }
+        if (annRes.status === 'fulfilled' && Array.isArray(annRes.value)) {
+          document.getElementById('pulse-bulletins').textContent = annRes.value.length;
+        }
+      });
+    });
+  </script>
 </body>
 </html>

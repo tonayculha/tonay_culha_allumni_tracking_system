@@ -28,6 +28,7 @@ An enterprise-ready, clean-room implementation of the **Alumni Tracking System**
   - [7. Calculation Endpoint (`GET /sum/:num1/:num2`)](#7-calculation-summation)
   - [8. Semantic HTML Views](#8-semantic-html-views)
 - [Database Design & Persistence Documentation (ddd.md)](#-database-design--persistence-documentation-dddmd)
+- [Brand & Design System](#brand--design-system)
 - [🛡️ Middleware Architecture & Reliability Guardians (Week 7 Milestone)](#️-middleware-architecture--reliability-guardians-week-7-milestone)
 - [Local Development & Testing](#-local-development--testing)
 - [Environment Configuration](#-environment-configuration)
@@ -188,6 +189,9 @@ The backend follows an enterprise modular 5-tier architecture:
 ├── .env                  # Default environment values for instant execution
 ├── .env.example          # Documented template for configuration variables
 ├── .gitignore            # Git exclusion rules for node_modules, logs, volumes
+├── brand.md              # Alumni Hub brand identity, voice & tone, personas, messaging
+├── DESIGN.md             # AI-ready design system specification (tokens, components, WCAG)
+├── ddd.md                # Relational Data Design Document (PostgreSQL schema & migrations)
 ├── docker-compose.yml    # Root-level multi-container orchestration
 ├── README.md             # Architecture, API & deployment documentation
 └── backend/
@@ -195,9 +199,13 @@ The backend follows an enterprise modular 5-tier architecture:
     ├── .dockerignore     # Docker build context exclusions
     ├── package.json      # NPM dependencies, scripts, and metadata
     ├── package-lock.json # Deterministic dependency lockfile
-    ├── public/           # Static assets (stylesheets, branding)
-    │   └── css/
-    │       └── style.css # Unified design system (dark-mode, badges, modals, toasts)
+    ├── public/           # Static assets (design tokens, stylesheets, navigation script, 404)
+    │   ├── 404.html      # Static 404 Guardian fallback view
+    │   ├── css/
+    │   │   ├── tokens.css # Collegiate Obsidian CSS custom properties (DESIGN.md)
+    │   │   └── style.css  # Unified responsive component stylesheet (WCAG 2.1 AA)
+    │   └── js/
+    │       └── nav.js     # Mobile drawer toggle & Escape-key accessibility helper
     ├── src/
     │   ├── app.js        # Express application configuration & middlewares
     │   ├── server.js     # Server bootstrap & graceful shutdown handler
@@ -550,6 +558,34 @@ The comprehensive database architecture, schema definitions, constraints, index 
 * **Deterministic Bootstrapping**: Docker Compose coordinates backend startup using PostgreSQL health probes (`pg_isready`), ensuring zero connection dropouts during container orchestration.
 * **Sequential Transactional Migrations**: Handled by `backend/src/db/migrate.js` with `schema_migrations` tracking and automatic rollback safety.
 * **Bidirectional Documentation**: [ddd.md](./ddd.md) links directly back to this [README.md](./README.md).
+
+---
+
+## Brand & Design System
+
+The user-facing **Alumni Hub** experience is governed by two standalone, AI-ready specification documents in the repository root that align visual craft, accessibility, and editorial copy across every MVC view:
+
+| Document | Scope & Governance | Direct Link |
+| :--- | :--- | :--- |
+| **Brand Strategy & Messaging** | Brand identity, mission & vision, voice & tone matrix, core user personas (Alumni, Students, Recruiters), and UI microcopy rules. | **[Read `brand.md`](./brand.md)** |
+| **Design System Specification** | `VoltAgent/awesome-design-md` 9-section AI-ready spec covering Collegiate Obsidian HEX/HSL color tokens, typography scale, 4px/8px spacing grid, component specs, and WCAG 2.1 AA/AAA contrast rules. | **[Read `DESIGN.md`](./DESIGN.md)** |
+
+### Quick Section Anchors
+
+- **Brand Identity (`brand.md`)**:
+  - [Brand Identity & Positioning](./brand.md#1-brand-identity--positioning)
+  - [Mission & Vision](./brand.md#2-mission--vision)
+  - [Brand Personality, Voice & Tone](./brand.md#3-brand-personality-voice--tone)
+  - [User Personas (Alumni, Students, Recruiters)](./brand.md#4-user-personas)
+  - [Messaging Guidelines & Copywriting Standards](./brand.md#5-messaging-guidelines--copywriting-standards)
+- **Design System (`DESIGN.md`)**:
+  - [Visual Theme & Atmosphere](./DESIGN.md#1-visual-theme--atmosphere)
+  - [Color Palette & Roles (HEX / HSL)](./DESIGN.md#2-color-palette--roles)
+  - [WCAG 2.1 AA / AAA Contrast Verification Matrix](./DESIGN.md#26-wcag-21-aa--aaa-contrast-rules--verification-matrix)
+  - [Typography Rules & Modular Scale](./DESIGN.md#3-typography-rules)
+  - [Component Stylings (Navbar, Buttons, Cards, Forms, Tables)](./DESIGN.md#4-component-stylings)
+  - [Layout Principles & Spacing Grid](./DESIGN.md#5-layout-principles)
+  - [Agent Prompt Guide & `:root` Token Reference](./DESIGN.md#9-agent-prompt-guide--quick-reference)
 
 ---
 

@@ -4,59 +4,69 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Alumni Tracking System | Job Postings</title>
-  <meta name="description" content="Explore and apply to career opportunities and job postings published by alumni and partners.">
+  <meta name="description" content="Explore alumni-referred career opportunities, publish roles, and submit applications on Alumni Hub.">
+  <link rel="stylesheet" href="/css/tokens.css">
   <link rel="stylesheet" href="/css/style.css">
   <!-- INITIAL_JOBS_DATA -->
 </head>
 <body>
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+
   <header>
     <div class="nav-container">
-      <a href="/home" class="brand">
-        🎓 Alumni System
-        <span class="brand-badge">Core v1.0</span>
+      <a href="/home" class="brand" aria-label="Alumni Hub Home">
+        <span class="brand-crest" aria-hidden="true">AH</span>
+        <span>Alumni Hub</span>
+        <span class="brand-badge">Network</span>
       </a>
-      <nav>
+      <button type="button" id="nav-toggle" class="nav-toggle" aria-expanded="false" aria-controls="primary-nav" aria-label="Toggle navigation menu">
+        <svg class="icon-lg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <line x1="3" y1="6" x2="21" y2="6"></line>
+          <line x1="3" y1="12" x2="21" y2="12"></line>
+          <line x1="3" y1="18" x2="21" y2="18"></line>
+        </svg>
+      </button>
+      <nav id="primary-nav" class="primary-nav" aria-label="Primary navigation">
         <ul>
           <li><a href="/home">Home</a></li>
-          <li><a href="/users">Users</a></li>
-          <li><a href="/announcements">Announcements</a></li>
-          <li><a href="/jobs" class="active">Jobs</a></li>
+          <li><a href="/users">Directory</a></li>
+          <li><a href="/jobs" class="active" aria-current="page">Opportunities</a></li>
           <li><a href="/applications">Applications</a></li>
+          <li><a href="/announcements">Bulletins</a></li>
           <li><a href="/about">About</a></li>
-          <li><a href="/api/swagger" target="_blank">Swagger Docs</a></li>
-          <li><a href="/api/jobs" target="_blank">Jobs API</a></li>
-          <li><a href="/api/health" target="_blank">Health</a></li>
+          <li><a href="/api/swagger" target="_blank" rel="noopener noreferrer">API Docs</a></li>
         </ul>
       </nav>
     </div>
   </header>
 
   <main>
-    <section class="hero" style="padding-bottom: 1.5rem;">
-      <div class="hero-tag">Relational Postings &bull; One-to-Many Associations</div>
-      <h1>Career Opportunities &amp; Job Postings</h1>
-      <p>
-        Discover engineering, research, and technical leadership opportunities posted by registered alumni and partner organizations.
-        Submit applications directly or publish your team's open vacancies.
-      </p>
+    <div id="main-content" tabindex="-1"></div>
+    <section class="page-header" aria-labelledby="jobs-heading">
+      <div class="page-header-copy">
+        <div class="hero-tag hero-tag-gold">Career Board &bull; Verified Open Roles</div>
+        <h1 id="jobs-heading">Career Opportunities &amp; Job Postings</h1>
+        <p>
+          Discover engineering, research, and leadership roles published by graduates and partner recruiters, or post an open vacancy from your team.
+        </p>
+      </div>
       <div class="btn-group">
-        <button id="btnPostJob" class="btn btn-primary">
-          💼 Post a Job
+        <button type="button" id="btnPostJob" class="btn btn-primary">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <line x1="12" y1="5" x2="12" y2="19"></line>
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+          </svg>
+          Post Opportunity
         </button>
-        <a href="/applications" class="btn btn-secondary">
-          📄 View Applications
-        </a>
-        <a href="/api/jobs" class="btn btn-secondary" target="_blank">
-          ⚡ Raw JSON API
-        </a>
+        <a href="/applications" class="btn btn-secondary">View Applications</a>
+        <a href="/api/jobs" class="btn btn-ghost" target="_blank" rel="noopener noreferrer">JSON API</a>
       </div>
     </section>
 
-    <!-- Metrics Overview -->
-    <section class="stats-grid">
+    <section class="stats-grid" aria-label="Opportunity metrics">
       <div class="stat-box">
         <div id="stat-total-jobs" class="stat-num">0</div>
-        <div class="stat-label">Total Vacancies</div>
+        <div class="stat-label">Open Vacancies</div>
       </div>
       <div class="stat-box">
         <div id="stat-companies" class="stat-num">0</div>
@@ -72,115 +82,133 @@
       </div>
     </section>
 
-    <!-- Toolbar Controls -->
-    <section class="card" style="padding: 1.25rem 1.5rem; margin-bottom: 1.5rem;">
-      <div class="toolbar" style="margin-bottom: 0;">
+    <section class="toolbar-card" aria-label="Search and filter opportunities">
+      <div class="toolbar">
         <div class="toolbar-left">
+          <label for="search-input" class="sr-only">Search job title, company, location, or author</label>
           <input
             type="text"
             id="search-input"
             class="search-input"
-            placeholder="🔍 Search title, company, location, or author..."
+            placeholder="Search role title, company, location, or author..."
           />
+          <label for="location-filter" class="sr-only">Filter by work mode</label>
           <select id="location-filter" class="filter-select">
-            <option value="all">All Locations</option>
+            <option value="all">All Work Modes</option>
             <option value="remote">Remote</option>
             <option value="hybrid">Hybrid</option>
             <option value="onsite">On-site</option>
           </select>
         </div>
         <div>
-          <button id="btn-refresh-jobs" class="btn-sm btn-view">🔄 Refresh</button>
+          <button type="button" id="btn-refresh-jobs" class="btn-sm btn-view">Refresh</button>
         </div>
       </div>
     </section>
 
-    <!-- Job Cards Grid -->
-    <section>
+    <section aria-label="Job listings">
       <div id="jobs-grid" class="job-grid">
         <!-- Dynamically rendered job cards -->
       </div>
       <div id="empty-state" class="empty-state" style="display: none;">
-        <div class="empty-icon">💼</div>
-        <h3>No job postings found</h3>
-        <p>No career vacancies matched your search query or filter criteria.</p>
+        <div class="empty-icon" aria-hidden="true">
+          <svg class="icon-lg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="2" y="7" width="20" height="14" rx="2"></rect>
+            <path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"></path>
+          </svg>
+        </div>
+        <h3>No matching opportunities found</h3>
+        <p>Try clearing your work mode filter or searching by a different company or role title.</p>
       </div>
     </section>
   </main>
 
   <footer>
-    <p>&copy; 2026 Alumni Tracking System &bull; MVC Relational Implementation &bull; Week 6 Homework</p>
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <span class="footer-brand-name">Alumni Hub</span>
+        <span class="footer-tagline">Where Academic Legacy Meets Career Momentum.</span>
+      </div>
+      <div class="footer-links">
+        <a href="/home">Home</a>
+        <a href="/users">Directory</a>
+        <a href="/jobs">Opportunities</a>
+        <a href="/applications">Applications</a>
+        <a href="/announcements">Bulletins</a>
+        <a href="/about">About</a>
+        <a href="/api/swagger" target="_blank" rel="noopener noreferrer">Swagger API</a>
+      </div>
+      <div class="footer-copy">
+        <span>&copy; 2026 Alumni Hub &bull; Powered by Alumni Tracking System</span>
+        <span>Career Opportunities Board</span>
+      </div>
+    </div>
   </footer>
 
-  <!-- ========================================================================= -->
   <!-- MODAL: POST A JOB -->
-  <!-- ========================================================================= -->
-  <div id="modalCreateJob" class="modal-overlay" data-modal="create-job-modal">
-    <div class="modal-dialog">
+  <div id="modalCreateJob" class="modal-overlay" data-modal="create-job-modal" role="dialog" aria-modal="true" aria-labelledby="modal-create-job-title">
+    <div class="modal-dialog modal-dialog-wide">
       <div class="modal-header">
-        <h3 class="modal-title">Publish Job Vacancy</h3>
-        <button class="modal-close" data-close-modal="modalCreateJob">&times;</button>
+        <h3 id="modal-create-job-title" class="modal-title">Publish Job Opportunity</h3>
+        <button type="button" class="modal-close" data-close-modal="modalCreateJob" aria-label="Close modal">&times;</button>
       </div>
       <form id="create-job-form" action="/jobs" method="POST">
         <div class="modal-body">
           <div class="form-group">
-            <label class="form-label" for="create-author-user">Author / Posted By *</label>
-            <select id="create-author-user" name="userId" class="form-control" required>
-              <option value="" disabled selected>Select authoring alumni / recruiter...</option>
+            <label class="form-label" for="create-author-user">Posted By <span class="form-required">*</span></label>
+            <select id="create-author-user" name="userId" class="form-control" required aria-required="true">
+              <option value="" disabled selected>Select authoring alumni or recruiter...</option>
             </select>
           </div>
           <div class="form-group">
-            <label class="form-label" for="create-job-title">Job Title *</label>
-            <input type="text" id="create-job-title" name="title" class="form-control" placeholder="e.g. Senior Backend Engineer" required minlength="2">
+            <label class="form-label" for="create-job-title">Job Title <span class="form-required">*</span></label>
+            <input type="text" id="create-job-title" name="title" class="form-control" placeholder="e.g., Senior Backend Engineer" required minlength="2" maxlength="120" aria-required="true">
+            <div class="form-hint">Up to 120 characters.</div>
           </div>
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+          <div class="form-row-2">
             <div class="form-group">
-              <label class="form-label" for="create-job-company">Hiring Company *</label>
-              <input type="text" id="create-job-company" name="company" class="form-control" placeholder="e.g. Stripe, NASA, Google" required minlength="2">
+              <label class="form-label" for="create-job-company">Hiring Company <span class="form-required">*</span></label>
+              <input type="text" id="create-job-company" name="company" class="form-control" placeholder="e.g., Stripe, NASA, Google" required minlength="2" aria-required="true">
             </div>
             <div class="form-group">
               <label class="form-label" for="create-job-location">Location / Work Mode</label>
-              <input type="text" id="create-job-location" name="location" class="form-control" placeholder="e.g. San Francisco, CA (Remote)">
+              <input type="text" id="create-job-location" name="location" class="form-control" placeholder="e.g., San Francisco, CA (Remote)">
             </div>
           </div>
           <div class="form-group">
-            <label class="form-label" for="create-job-description">Job Description &amp; Requirements</label>
-            <textarea id="create-job-description" name="description" class="form-control" rows="4" placeholder="Responsibilities, technical qualifications, and team culture..."></textarea>
+            <label class="form-label" for="create-job-description">Description &amp; Requirements</label>
+            <textarea id="create-job-description" name="description" class="form-control" rows="4" placeholder="Responsibilities, core qualifications, and team culture..."></textarea>
           </div>
-          <div id="create-job-error" class="form-error" style="display: none;"></div>
+          <div id="create-job-error" class="form-error" role="alert"></div>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn-sm btn-view" data-close-modal="modalCreateJob">Cancel</button>
-          <button type="submit" id="create-job-submit-btn" class="btn-sm btn-edit" style="background: var(--primary); color: #fff;">
-            Publish Opportunity
-          </button>
+          <button type="submit" id="create-job-submit-btn" class="btn-sm btn-primary">Publish Opportunity</button>
         </div>
       </form>
     </div>
   </div>
 
-  <!-- ========================================================================= -->
   <!-- MODAL: APPLY TO JOB -->
-  <!-- ========================================================================= -->
-  <div id="modalApplyJob" class="modal-overlay" data-modal="apply-job-modal">
+  <div id="modalApplyJob" class="modal-overlay" data-modal="apply-job-modal" role="dialog" aria-modal="true" aria-labelledby="modal-apply-job-title">
     <div class="modal-dialog">
       <div class="modal-header">
-        <h3 class="modal-title">Submit Application</h3>
-        <button class="modal-close" data-close-modal="modalApplyJob">&times;</button>
+        <h3 id="modal-apply-job-title" class="modal-title">Submit Application</h3>
+        <button type="button" class="modal-close" data-close-modal="modalApplyJob" aria-label="Close modal">&times;</button>
       </div>
       <form id="apply-job-form">
         <input type="hidden" id="apply-job-id" name="jobId">
         <div class="modal-body">
-          <div class="card" style="padding: 1rem; margin-bottom: 1.25rem; background: rgba(37, 99, 235, 0.1); border-color: rgba(37, 99, 235, 0.3);">
-            <div style="font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--primary);">Target Opportunity</div>
-            <div id="apply-job-display-title" style="font-size: 1.15rem; font-weight: 700; color: #fff; margin-top: 0.25rem;"></div>
-            <div id="apply-job-display-company" style="font-size: 0.9rem; color: #93c5fd; margin-top: 0.2rem;"></div>
+          <div class="detail-banner">
+            <div class="detail-banner-label">Target Opportunity</div>
+            <div id="apply-job-display-title" class="detail-banner-title"></div>
+            <div id="apply-job-display-company" class="detail-banner-sub"></div>
           </div>
 
           <div class="form-group">
-            <label class="form-label" for="apply-candidate-user">Candidate Applicant *</label>
-            <select id="apply-candidate-user" name="userId" class="form-control" required>
-              <option value="" disabled selected>Select candidate / student applicant...</option>
+            <label class="form-label" for="apply-candidate-user">Candidate Applicant <span class="form-required">*</span></label>
+            <select id="apply-candidate-user" name="userId" class="form-control" required aria-required="true">
+              <option value="" disabled selected>Select candidate or student applicant...</option>
             </select>
           </div>
 
@@ -192,82 +220,101 @@
             </select>
           </div>
 
-          <div id="apply-job-error" class="form-error" style="display: none;"></div>
+          <div id="apply-job-error" class="form-error" role="alert"></div>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn-sm btn-view" data-close-modal="modalApplyJob">Cancel</button>
-          <button type="submit" id="apply-job-submit-btn" class="btn-sm btn-edit" style="background: var(--accent-green); color: #fff;">
-            Confirm Application
-          </button>
+          <button type="submit" id="apply-job-submit-btn" class="btn-sm btn-apply">Confirm Application</button>
         </div>
       </form>
     </div>
   </div>
 
-  <!-- ========================================================================= -->
   <!-- MODAL: VIEW JOB DETAILS -->
-  <!-- ========================================================================= -->
-  <div id="modalViewJob" class="modal-overlay" data-modal="view-job-modal">
-    <div class="modal-dialog">
+  <div id="modalViewJob" class="modal-overlay" data-modal="view-job-modal" role="dialog" aria-modal="true" aria-labelledby="view-job-title">
+    <div class="modal-dialog modal-dialog-wide">
       <div class="modal-header">
-        <h3 id="view-job-title" class="modal-title">Job Details</h3>
-        <button class="modal-close" data-close-modal="modalViewJob">&times;</button>
+        <h3 id="view-job-title" class="modal-title">Opportunity Details</h3>
+        <button type="button" class="modal-close" data-close-modal="modalViewJob" aria-label="Close modal">&times;</button>
       </div>
       <div class="modal-body">
-        <div style="margin-bottom: 1rem;">
-          <span id="view-job-company" style="font-size: 1.1rem; font-weight: 600; color: var(--primary);"></span>
-          <span id="view-job-location" style="margin-left: 0.75rem; font-size: 0.9rem; color: var(--text-muted);"></span>
+        <div class="detail-banner">
+          <div id="view-job-company" class="detail-banner-title" style="margin-top: 0;"></div>
+          <div id="view-job-location" class="detail-banner-sub"></div>
         </div>
-        <div class="form-group">
-          <label class="form-label">Published By</label>
-          <div id="view-job-author" style="color: #cbd5e1; font-weight: 500;"></div>
-        </div>
-        <div class="form-group">
-          <label class="form-label">Description &amp; Requirements</label>
-          <div id="view-job-desc" style="white-space: pre-wrap; color: #f1f5f9; line-height: 1.6; background: rgba(0,0,0,0.2); padding: 1rem; border-radius: 8px;"></div>
-        </div>
-        <div class="form-group" style="font-size: 0.8rem; color: var(--text-muted);">
-          <span>Date Posted: <strong id="view-job-date"></strong></span>
+        <div class="detail-list">
+          <div>
+            <div class="stat-label">Published By</div>
+            <div id="view-job-author" class="detail-row-value"></div>
+          </div>
+          <div>
+            <div class="stat-label">Description &amp; Requirements</div>
+            <div id="view-job-desc" class="detail-prose" style="margin-top: var(--space-2);"></div>
+          </div>
+          <div class="detail-row-muted">
+            Date Posted: <strong id="view-job-date" class="cell-primary"></strong>
+          </div>
         </div>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn-sm btn-view" data-close-modal="modalViewJob">Close</button>
-        <button type="button" id="view-job-apply-btn" class="btn-sm btn-edit" style="background: var(--accent-green); color: #fff;">
-          Apply to this Job
-        </button>
+        <button type="button" id="view-job-apply-btn" class="btn-sm btn-apply">Apply Now</button>
       </div>
     </div>
   </div>
 
-  <!-- Toast Notification Container -->
-  <div id="toast-container" class="toast-container"></div>
+  <div id="toast-container" class="toast-container" role="status" aria-live="polite"></div>
 
-  <!-- Client-side Application Logic -->
+  <script src="/js/nav.js"></script>
   <script>
     let allJobs = [];
     let allUsers = [];
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
 
     function showToast(message, type = 'success') {
       const container = document.getElementById('toast-container');
       const toast = document.createElement('div');
       toast.className = `toast toast-${type}`;
-      const icon = type === 'success' ? '✅' : '⚠️';
-      toast.innerHTML = `<span>${icon}</span> <span>${message}</span>`;
+      const badge = document.createElement('span');
+      badge.className = 'toast-badge';
+      badge.setAttribute('aria-hidden', 'true');
+      badge.textContent = type === 'success' ? '✓' : '!';
+      const msg = document.createElement('span');
+      msg.textContent = message;
+      toast.appendChild(badge);
+      toast.appendChild(msg);
       container.appendChild(toast);
       setTimeout(() => {
         toast.style.opacity = '0';
-        setTimeout(() => toast.remove(), 300);
+        toast.style.transform = 'translateY(8px)';
+        toast.style.transition = 'opacity 200ms ease, transform 200ms ease';
+        setTimeout(() => toast.remove(), 220);
       }, 4000);
     }
 
     function openModal(id) {
       const modal = document.getElementById(id);
-      if (modal) modal.classList.add('active');
+      if (modal) {
+        modal.classList.add('open', 'active');
+        document.body.style.overflow = 'hidden';
+      }
     }
 
     function closeModal(id) {
       const modal = document.getElementById(id);
-      if (modal) modal.classList.remove('active');
+      if (modal) {
+        modal.classList.remove('open', 'active');
+        document.body.style.overflow = '';
+      }
     }
 
     function populateUserSelects() {
@@ -275,7 +322,7 @@
       const candidateSelect = document.getElementById('apply-candidate-user');
 
       if (authorSelect) {
-        authorSelect.innerHTML = '<option value="" disabled selected>Select authoring alumni / recruiter...</option>';
+        authorSelect.innerHTML = '<option value="" disabled selected>Select authoring alumni or recruiter...</option>';
         allUsers.forEach(u => {
           const opt = document.createElement('option');
           opt.value = u.id;
@@ -285,7 +332,7 @@
       }
 
       if (candidateSelect) {
-        candidateSelect.innerHTML = '<option value="" disabled selected>Select candidate / student applicant...</option>';
+        candidateSelect.innerHTML = '<option value="" disabled selected>Select candidate or student applicant...</option>';
         allUsers.forEach(u => {
           const opt = document.createElement('option');
           opt.value = u.id;
@@ -298,7 +345,7 @@
     function updateStats(jobs) {
       document.getElementById('stat-total-jobs').textContent = jobs.length;
 
-      const uniqueCompanies = new Set(jobs.map(j => (j.company || '').trim().toLowerCase())).size;
+      const uniqueCompanies = new Set(jobs.map(j => (j.company || '').trim().toLowerCase()).filter(Boolean)).size;
       document.getElementById('stat-companies').textContent = uniqueCompanies;
 
       const remoteCount = jobs.filter(j => {
@@ -307,7 +354,7 @@
       }).length;
       document.getElementById('stat-remote-jobs').textContent = remoteCount;
 
-      const uniqueAuthors = new Set(jobs.map(j => j.userId || j.user_id)).size;
+      const uniqueAuthors = new Set(jobs.map(j => j.userId || j.user_id).filter(Boolean)).size;
       document.getElementById('stat-alumni-postings').textContent = uniqueAuthors;
     }
 
@@ -317,9 +364,11 @@
       grid.innerHTML = '';
 
       if (!jobs || jobs.length === 0) {
+        grid.style.display = 'none';
         emptyState.style.display = 'block';
         return;
       }
+      grid.style.display = 'grid';
       emptyState.style.display = 'none';
 
       jobs.forEach(job => {
@@ -328,42 +377,46 @@
         card.dataset.id = job.id;
 
         const authorName = job.authorName || (allUsers.find(u => u.id === (job.userId || job.user_id))?.name) || 'Registered Member';
-        const locationText = job.location ? `📍 ${job.location}` : '📍 Location not specified';
-        const snippet = job.description ? (job.description.length > 150 ? job.description.substring(0, 150) + '...' : job.description) : 'No description provided.';
-        const postedDate = job.createdAt || job.created_at ? new Date(job.createdAt || job.created_at).toLocaleDateString() : 'Recently';
+        const locationText = job.location || 'Location flexible';
+        const snippet = job.description
+          ? (job.description.length > 155 ? job.description.substring(0, 155) + '...' : job.description)
+          : 'No description provided.';
+        const postedDate = job.createdAt || job.created_at
+          ? new Date(job.createdAt || job.created_at).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' })
+          : 'Recently';
+
+        const locLower = locationText.toLowerCase();
+        const modeBadge = locLower.includes('remote')
+          ? '<span class="badge badge-career">Remote</span>'
+          : locLower.includes('hybrid')
+            ? '<span class="badge badge-priority-normal">Hybrid</span>'
+            : '<span class="badge badge-default">On-site</span>';
 
         card.innerHTML = `
-          <div class="job-card-header">
-            <h3 class="job-card-title">${escapeHtml(job.title)}</h3>
-            <div class="job-card-company">🏢 ${escapeHtml(job.company)}</div>
-            <div class="job-card-meta">
-              <span class="job-card-meta-item">${escapeHtml(locationText)}</span>
-              <span class="job-card-meta-item">🗓️ ${postedDate}</span>
+          <div>
+            <div class="announcement-header">
+              <div class="announcement-badges">${modeBadge}</div>
+              <span class="cell-mono">${escapeHtml(postedDate)}</span>
+            </div>
+            <div class="job-card-header">
+              <h3 class="job-card-title">${escapeHtml(job.title)}</h3>
+              <div class="job-card-company">${escapeHtml(job.company)}</div>
+              <div class="job-card-meta">
+                <span class="job-card-meta-item">${escapeHtml(locationText)}</span>
+              </div>
             </div>
           </div>
-          <div class="job-card-description">
-            ${escapeHtml(snippet)}
-          </div>
+          <div class="job-card-description">${escapeHtml(snippet)}</div>
           <div class="job-card-footer">
-            <div class="job-card-author">Posted by: <strong>${escapeHtml(authorName)}</strong></div>
-            <div style="display: flex; gap: 0.5rem;">
-              <button class="btn-sm btn-view btn-view-job" data-id="${job.id}">Details</button>
-              <button class="btn-sm btn-edit btn-apply-job" data-id="${job.id}" data-title="${escapeHtml(job.title)}" data-company="${escapeHtml(job.company)}" style="background: var(--accent-green); color: #fff;">Apply</button>
+            <div class="job-card-author">Posted by <strong>${escapeHtml(authorName)}</strong></div>
+            <div class="action-group">
+              <button type="button" class="btn-sm btn-view btn-view-job" data-id="${escapeHtml(job.id)}">View Details</button>
+              <button type="button" class="btn-sm btn-apply btn-apply-job" data-id="${escapeHtml(job.id)}" data-title="${escapeHtml(job.title)}" data-company="${escapeHtml(job.company)}">Apply Now</button>
             </div>
           </div>
         `;
         grid.appendChild(card);
       });
-    }
-
-    function escapeHtml(str) {
-      if (!str) return '';
-      return String(str)
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;')
-        .replace(/'/g, '&#039;');
     }
 
     function filterJobs() {
@@ -417,7 +470,7 @@
         filterJobs();
       } catch (err) {
         console.error('Failed to load jobs data:', err);
-        showToast('Failed to load job listings.', 'error');
+        showToast('Unable to load job opportunities.', 'error');
       }
     }
 
@@ -435,12 +488,14 @@
 
       document.getElementById('view-job-title').textContent = job.title;
       document.getElementById('view-job-company').textContent = job.company;
-      document.getElementById('view-job-location').textContent = job.location ? `📍 ${job.location}` : '📍 Remote';
-      
+      document.getElementById('view-job-location').textContent = job.location || 'Location flexible';
+
       const authorName = job.authorName || (allUsers.find(u => u.id === (job.userId || job.user_id))?.name) || 'Registered Member';
-      document.getElementById('view-job-author').textContent = `${authorName} (${job.authorEmail || ''})`;
+      document.getElementById('view-job-author').textContent = job.authorEmail ? `${authorName} (${job.authorEmail})` : authorName;
       document.getElementById('view-job-desc').textContent = job.description || 'No detailed description provided.';
-      document.getElementById('view-job-date').textContent = job.createdAt || job.created_at ? new Date(job.createdAt || job.created_at).toLocaleString() : 'N/A';
+      document.getElementById('view-job-date').textContent = job.createdAt || job.created_at
+        ? new Date(job.createdAt || job.created_at).toLocaleString()
+        : 'N/A';
 
       const applyBtn = document.getElementById('view-job-apply-btn');
       applyBtn.onclick = () => {
@@ -455,6 +510,7 @@
       e.preventDefault();
       const form = e.target;
       const errorDiv = document.getElementById('create-job-error');
+      const submitBtn = document.getElementById('create-job-submit-btn');
       errorDiv.style.display = 'none';
 
       const userId = document.getElementById('create-author-user').value;
@@ -464,13 +520,15 @@
       const description = document.getElementById('create-job-description').value.trim();
 
       if (!userId) {
-        errorDiv.textContent = 'Please select an authoring user.';
+        errorDiv.textContent = 'Select an authoring member before publishing.';
         errorDiv.style.display = 'block';
         return;
       }
 
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Publishing...';
+
       try {
-        // Use nested route: POST /api/users/:userId/jobs
         const res = await fetch(`/api/users/${encodeURIComponent(userId)}/jobs`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -479,22 +537,26 @@
 
         const data = await res.json();
         if (!res.ok) {
-          throw new Error(data.message || 'Failed to publish job.');
+          throw new Error(data.details ? data.details.join(' ') : (data.message || 'Failed to publish opportunity.'));
         }
 
         closeModal('modalCreateJob');
         form.reset();
-        showToast('🎉 Job posting published successfully!');
+        showToast('Opportunity published to the Career Board.');
         await loadJobs(true);
       } catch (err) {
         errorDiv.textContent = err.message;
         errorDiv.style.display = 'block';
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Publish Opportunity';
       }
     }
 
     async function handleApplyJobSubmit(e) {
       e.preventDefault();
       const errorDiv = document.getElementById('apply-job-error');
+      const submitBtn = document.getElementById('apply-job-submit-btn');
       errorDiv.style.display = 'none';
 
       const jobId = document.getElementById('apply-job-id').value;
@@ -502,13 +564,15 @@
       const status = document.getElementById('apply-status').value || 'applied';
 
       if (!userId) {
-        errorDiv.textContent = 'Please select a candidate applicant.';
+        errorDiv.textContent = 'Select a candidate applicant to submit.';
         errorDiv.style.display = 'block';
         return;
       }
 
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Submitting...';
+
       try {
-        // Use nested route: POST /api/jobs/:id/applications
         const res = await fetch(`/api/jobs/${encodeURIComponent(jobId)}/applications`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -517,30 +581,31 @@
 
         const data = await res.json();
 
-        // STRICT BUSINESS RULE: Catch 409 Conflict gracefully
         if (res.status === 409) {
-          const conflictMsg = data.message || 'Candidate has already applied for this job posting';
-          errorDiv.textContent = `⚠️ Conflict: ${conflictMsg}`;
+          const conflictMsg = data.message || 'This candidate has already applied to this opportunity.';
+          errorDiv.textContent = `Duplicate prevented: ${conflictMsg}`;
           errorDiv.style.display = 'block';
-          showToast(`⚠️ Conflict: ${conflictMsg}`, 'error');
+          showToast(conflictMsg, 'error');
           return;
         }
 
         if (!res.ok) {
-          throw new Error(data.message || 'Application failed.');
+          throw new Error(data.message || 'Application submission failed.');
         }
 
         closeModal('modalApplyJob');
-        showToast('🎉 Application submitted successfully!');
+        showToast('Application submitted successfully.');
       } catch (err) {
         errorDiv.textContent = err.message;
         errorDiv.style.display = 'block';
         showToast(err.message, 'error');
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Confirm Application';
       }
     }
 
     function attachEventListeners() {
-      // Open Create Modal
       const btnPostJob = document.getElementById('btnPostJob');
       if (btnPostJob) {
         btnPostJob.addEventListener('click', () => {
@@ -549,33 +614,31 @@
         });
       }
 
-      // Refresh button
       const btnRefresh = document.getElementById('btn-refresh-jobs');
       if (btnRefresh) {
         btnRefresh.addEventListener('click', () => loadJobs(true));
       }
 
-      // Filter events
       const searchInput = document.getElementById('search-input');
       if (searchInput) {
         searchInput.addEventListener('input', filterJobs);
       }
+
       const locFilter = document.getElementById('location-filter');
       if (locFilter) {
         locFilter.addEventListener('change', filterJobs);
       }
 
-      // Form submissions
       const createForm = document.getElementById('create-job-form');
       if (createForm) {
         createForm.addEventListener('submit', handleCreateJobSubmit);
       }
+
       const applyForm = document.getElementById('apply-job-form');
       if (applyForm) {
         applyForm.addEventListener('submit', handleApplyJobSubmit);
       }
 
-      // Event delegation for grid buttons
       const grid = document.getElementById('jobs-grid');
       if (grid) {
         grid.addEventListener('click', (e) => {
@@ -591,7 +654,6 @@
         });
       }
 
-      // Close modal bindings
       document.querySelectorAll('.modal-overlay').forEach(overlay => {
         overlay.addEventListener('click', (e) => {
           if (e.target === overlay) closeModal(overlay.id);
@@ -618,9 +680,9 @@
 
       const urlParams = new URLSearchParams(window.location.search);
       if (urlParams.get('status') === 'created') {
-        showToast('New job opportunity published!');
+        showToast('Opportunity published to the Career Board.');
       } else if (urlParams.get('status') === 'deleted') {
-        showToast('Job posting deleted.');
+        showToast('Job posting removed.');
       } else if (urlParams.get('error')) {
         showToast(decodeURIComponent(urlParams.get('error')), 'error');
       } else if (urlParams.get('view')) {

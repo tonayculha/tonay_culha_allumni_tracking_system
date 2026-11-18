@@ -112,23 +112,45 @@ function errorGuardian(err, req, res, next) {
       <meta charset="UTF-8">
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
       <title>Error ${statusCode} | Alumni System</title>
+      <link rel="stylesheet" href="/css/tokens.css">
       <link rel="stylesheet" href="/css/style.css">
     </head>
     <body>
-      <main style="text-align: center; padding-top: 5rem; max-width: 600px; margin: 0 auto; padding-left: 1rem; padding-right: 1rem;">
-        <h1 style="font-size: 4rem; color: #ef4444; margin-bottom: 0.5rem;">Error ${statusCode}</h1>
-        <h2 style="font-size: 1.75rem; margin-bottom: 1rem; color: #1e293b;">
-          ${statusCode >= 500 ? 'Internal Server Error' : 'An error occurred'}
-        </h2>
-        <p style="color: #64748b; font-size: 1.1rem; margin: 1rem 0 0.5rem; line-height: 1.6;">
-          ${statusCode >= 500 ? 'A server-side error occurred while processing your request.' : err.message}
-        </p>
-        <p style="color: #94a3b8; font-size: 0.95rem; margin-bottom: 2rem; font-family: monospace;">
-          ${err.message || 'Unexpected server error'}
-        </p>
-        <div style="display: flex; gap: 1rem; justify-content: center;">
-          <a href="/home" class="btn btn-primary" style="text-decoration: none; padding: 0.6rem 1.25rem; border-radius: 6px; background: #2563eb; color: #fff;">Return to Home</a>
-          <a href="/jobs" class="btn btn-secondary" style="text-decoration: none; padding: 0.6rem 1.25rem; border-radius: 6px; background: #f1f5f9; color: #334155;">Browse Jobs</a>
+      <header>
+        <div class="nav-container">
+          <a href="/home" class="brand" aria-label="Alumni Hub Home">
+            <span class="brand-crest" aria-hidden="true">AH</span>
+            <span>Alumni Hub</span>
+            <span class="brand-badge brand-badge-danger">Error ${statusCode}</span>
+          </a>
+          <nav class="primary-nav" aria-label="Primary navigation">
+            <ul>
+              <li><a href="/home">Home</a></li>
+              <li><a href="/users">Directory</a></li>
+              <li><a href="/jobs">Opportunities</a></li>
+              <li><a href="/applications">Applications</a></li>
+              <li><a href="/announcements">Bulletins</a></li>
+            </ul>
+          </nav>
+        </div>
+      </header>
+      <main>
+        <div class="error-shell">
+          <section class="error-card">
+            <span class="badge badge-priority-urgent">System Guardian</span>
+            <h1 class="error-code">Error ${statusCode}</h1>
+            <h2 class="error-title">${statusCode >= 500 ? 'Internal Server Error' : 'An error occurred'}</h2>
+            <p class="error-desc">
+              ${statusCode >= 500 ? 'A server-side error occurred while processing your request.' : err.message}
+            </p>
+            <div class="error-reason">
+              ${err.message || 'Unexpected server error'}
+            </div>
+            <div class="btn-group" style="justify-content: center;">
+              <a href="/home" class="btn btn-primary">Return to Home</a>
+              <a href="/jobs" class="btn btn-secondary">Browse Jobs</a>
+            </div>
+          </section>
         </div>
       </main>
     </body>

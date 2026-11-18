@@ -4,56 +4,66 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Alumni Tracking System | Candidate Applications</title>
-  <meta name="description" content="Manage and track job applications across alumni and partner vacancies.">
+  <meta name="description" content="Track candidate job applications and lifecycle statuses across alumni and partner opportunities on Alumni Hub.">
+  <link rel="stylesheet" href="/css/tokens.css">
   <link rel="stylesheet" href="/css/style.css">
   <!-- INITIAL_APPLICATIONS_DATA -->
 </head>
 <body>
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+
   <header>
     <div class="nav-container">
-      <a href="/home" class="brand">
-        🎓 Alumni System
-        <span class="brand-badge">Core v1.0</span>
+      <a href="/home" class="brand" aria-label="Alumni Hub Home">
+        <span class="brand-crest" aria-hidden="true">AH</span>
+        <span>Alumni Hub</span>
+        <span class="brand-badge">Network</span>
       </a>
-      <nav>
+      <button type="button" id="nav-toggle" class="nav-toggle" aria-expanded="false" aria-controls="primary-nav" aria-label="Toggle navigation menu">
+        <svg class="icon-lg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <line x1="3" y1="6" x2="21" y2="6"></line>
+          <line x1="3" y1="12" x2="21" y2="12"></line>
+          <line x1="3" y1="18" x2="21" y2="18"></line>
+        </svg>
+      </button>
+      <nav id="primary-nav" class="primary-nav" aria-label="Primary navigation">
         <ul>
           <li><a href="/home">Home</a></li>
-          <li><a href="/users">Users</a></li>
-          <li><a href="/announcements">Announcements</a></li>
-          <li><a href="/jobs">Jobs</a></li>
-          <li><a href="/applications" class="active">Applications</a></li>
+          <li><a href="/users">Directory</a></li>
+          <li><a href="/jobs">Opportunities</a></li>
+          <li><a href="/applications" class="active" aria-current="page">Applications</a></li>
+          <li><a href="/announcements">Bulletins</a></li>
           <li><a href="/about">About</a></li>
-          <li><a href="/api/swagger" target="_blank">Swagger Docs</a></li>
-          <li><a href="/api/applications" target="_blank">Applications API</a></li>
-          <li><a href="/api/health" target="_blank">Health</a></li>
+          <li><a href="/api/swagger" target="_blank" rel="noopener noreferrer">API Docs</a></li>
         </ul>
       </nav>
     </div>
   </header>
 
   <main>
-    <section class="hero" style="padding-bottom: 1.5rem;">
-      <div class="hero-tag">Relational Many-to-Many Join &bull; Workflow State Machine</div>
-      <h1>Candidate Applications &amp; Tracking</h1>
-      <p>
-        Monitor candidate career submissions, inspect application lifecycle states, 
-        and prevent duplicate applications through relational constraints.
-      </p>
+    <div id="main-content" tabindex="-1"></div>
+    <section class="page-header" aria-labelledby="applications-heading">
+      <div class="page-header-copy">
+        <div class="hero-tag">Application Pipeline &bull; Lifecycle Tracker</div>
+        <h1 id="applications-heading">Candidate Applications &amp; Tracking</h1>
+        <p>
+          Monitor candidate submissions from initial application to final decision, with built-in safeguards preventing duplicate entries.
+        </p>
+      </div>
       <div class="btn-group">
-        <button id="btnCreateApplication" class="btn btn-primary">
-          📝 Submit Application
+        <button type="button" id="btnCreateApplication" class="btn btn-primary">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <line x1="12" y1="5" x2="12" y2="19"></line>
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+          </svg>
+          Submit Application
         </button>
-        <a href="/jobs" class="btn btn-secondary">
-          💼 Browse Open Jobs
-        </a>
-        <a href="/api/applications" class="btn btn-secondary" target="_blank">
-          ⚡ Raw JSON API
-        </a>
+        <a href="/jobs" class="btn btn-secondary">Browse Open Roles</a>
+        <a href="/api/applications" class="btn btn-ghost" target="_blank" rel="noopener noreferrer">JSON API</a>
       </div>
     </section>
 
-    <!-- Metrics Overview -->
-    <section class="stats-grid">
+    <section class="stats-grid" aria-label="Application pipeline metrics">
       <div class="stat-box">
         <div id="stat-total-apps" class="stat-num">0</div>
         <div class="stat-label">Total Submissions</div>
@@ -72,41 +82,41 @@
       </div>
     </section>
 
-    <!-- Toolbar Controls -->
-    <section class="card" style="padding: 1.25rem 1.5rem; margin-bottom: 1.5rem;">
-      <div class="toolbar" style="margin-bottom: 0;">
-        <div class="toolbar-left">
-          <input
-            type="text"
-            id="search-input"
-            class="search-input"
-            placeholder="🔍 Search candidate, job title, or company..."
-          />
-          <select id="status-filter" class="filter-select">
-            <option value="all">All Statuses</option>
-            <option value="applied">Applied</option>
-            <option value="interview">Interview</option>
-            <option value="accepted">Accepted</option>
-            <option value="rejected">Rejected</option>
-          </select>
-        </div>
-        <div>
-          <button id="btn-refresh-apps" class="btn-sm btn-view">🔄 Refresh</button>
+    <section class="table-shell" aria-label="Candidate application records">
+      <div class="table-toolbar">
+        <div class="toolbar">
+          <div class="toolbar-left">
+            <label for="search-input" class="sr-only">Search candidate, job title, or company</label>
+            <input
+              type="text"
+              id="search-input"
+              class="search-input"
+              placeholder="Search candidate, role title, or company..."
+            />
+            <label for="status-filter" class="sr-only">Filter by application status</label>
+            <select id="status-filter" class="filter-select">
+              <option value="all">All Statuses</option>
+              <option value="applied">Applied</option>
+              <option value="interview">Interview</option>
+              <option value="accepted">Accepted</option>
+              <option value="rejected">Rejected</option>
+            </select>
+          </div>
+          <div>
+            <button type="button" id="btn-refresh-apps" class="btn-sm btn-view">Refresh</button>
+          </div>
         </div>
       </div>
-    </section>
 
-    <!-- Applications Table -->
-    <section class="card" style="padding: 0; overflow: hidden;">
-      <div style="overflow-x: auto;">
-        <table class="data-table" style="width: 100%; border-collapse: collapse; text-align: left;">
+      <div class="table-responsive">
+        <table id="applications-table" class="data-table">
           <thead>
-            <tr style="border-bottom: 1px solid var(--card-border); background: rgba(255, 255, 255, 0.03);">
-              <th style="padding: 1rem 1.25rem;">Candidate</th>
-              <th style="padding: 1rem 1.25rem;">Position &amp; Company</th>
-              <th style="padding: 1rem 1.25rem;">Status</th>
-              <th style="padding: 1rem 1.25rem;">Applied At</th>
-              <th style="padding: 1rem 1.25rem; text-align: right;">Actions</th>
+            <tr>
+              <th>Candidate</th>
+              <th>Role &amp; Company</th>
+              <th>Status</th>
+              <th>Applied On</th>
+              <th class="col-right">Actions</th>
             </tr>
           </thead>
           <tbody id="applications-table-body">
@@ -115,39 +125,62 @@
         </table>
       </div>
       <div id="empty-state" class="empty-state" style="display: none;">
-        <div class="empty-icon">📭</div>
-        <h3>No applications found</h3>
-        <p>No job application submissions matched your search query or filter criteria.</p>
+        <div class="empty-icon" aria-hidden="true">
+          <svg class="icon-lg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+            <polyline points="14 2 14 8 20 8"></polyline>
+            <line x1="16" y1="13" x2="8" y2="13"></line>
+            <line x1="16" y1="17" x2="8" y2="17"></line>
+          </svg>
+        </div>
+        <h3>No matching applications found</h3>
+        <p>Try clearing your status filter or submit a new application for an open opportunity.</p>
       </div>
     </section>
   </main>
 
   <footer>
-    <p>&copy; 2026 Alumni Tracking System &bull; MVC Relational Implementation &bull; Week 6 Homework</p>
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <span class="footer-brand-name">Alumni Hub</span>
+        <span class="footer-tagline">Where Academic Legacy Meets Career Momentum.</span>
+      </div>
+      <div class="footer-links">
+        <a href="/home">Home</a>
+        <a href="/users">Directory</a>
+        <a href="/jobs">Opportunities</a>
+        <a href="/applications">Applications</a>
+        <a href="/announcements">Bulletins</a>
+        <a href="/about">About</a>
+        <a href="/api/swagger" target="_blank" rel="noopener noreferrer">Swagger API</a>
+      </div>
+      <div class="footer-copy">
+        <span>&copy; 2026 Alumni Hub &bull; Powered by Alumni Tracking System</span>
+        <span>Application Lifecycle Tracker</span>
+      </div>
+    </div>
   </footer>
 
-  <!-- ========================================================================= -->
   <!-- MODAL: SUBMIT APPLICATION -->
-  <!-- ========================================================================= -->
-  <div id="modalCreateApplication" class="modal-overlay" data-modal="create-app-modal">
+  <div id="modalCreateApplication" class="modal-overlay" data-modal="create-app-modal" role="dialog" aria-modal="true" aria-labelledby="modal-create-app-title">
     <div class="modal-dialog">
       <div class="modal-header">
-        <h3 class="modal-title">Submit Candidate Application</h3>
-        <button class="modal-close" data-close-modal="modalCreateApplication">&times;</button>
+        <h3 id="modal-create-app-title" class="modal-title">Submit Candidate Application</h3>
+        <button type="button" class="modal-close" data-close-modal="modalCreateApplication" aria-label="Close modal">&times;</button>
       </div>
-      <form id="create-app-form">
+      <form id="create-app-form" action="/applications" method="POST">
         <div class="modal-body">
           <div class="form-group">
-            <label class="form-label" for="select-job-target">Target Job Posting *</label>
-            <select id="select-job-target" name="jobId" class="form-control" required>
-              <option value="" disabled selected>Select vacancy position...</option>
+            <label class="form-label" for="select-job-target">Target Opportunity <span class="form-required">*</span></label>
+            <select id="select-job-target" name="jobId" class="form-control" required aria-required="true">
+              <option value="" disabled selected>Select open position...</option>
             </select>
           </div>
 
           <div class="form-group">
-            <label class="form-label" for="select-candidate-user">Candidate Applicant *</label>
-            <select id="select-candidate-user" name="userId" class="form-control" required>
-              <option value="" disabled selected>Select candidate / student applicant...</option>
+            <label class="form-label" for="select-candidate-user">Candidate Applicant <span class="form-required">*</span></label>
+            <select id="select-candidate-user" name="userId" class="form-control" required aria-required="true">
+              <option value="" disabled selected>Select candidate or student applicant...</option>
             </select>
           </div>
 
@@ -161,48 +194,69 @@
             </select>
           </div>
 
-          <div id="create-app-error" class="form-error" style="display: none;"></div>
+          <div id="create-app-error" class="form-error" role="alert"></div>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn-sm btn-view" data-close-modal="modalCreateApplication">Cancel</button>
-          <button type="submit" id="create-app-submit-btn" class="btn-sm btn-edit" style="background: var(--accent-green); color: #fff;">
-            Record Application
-          </button>
+          <button type="submit" id="create-app-submit-btn" class="btn-sm btn-apply">Record Application</button>
         </div>
       </form>
     </div>
   </div>
 
-  <!-- Toast Notification Container -->
-  <div id="toast-container" class="toast-container"></div>
+  <div id="toast-container" class="toast-container" role="status" aria-live="polite"></div>
 
-  <!-- Client Application Logic -->
+  <script src="/js/nav.js"></script>
   <script>
     let allApplications = [];
     let allJobs = [];
     let allUsers = [];
 
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
     function showToast(message, type = 'success') {
       const container = document.getElementById('toast-container');
       const toast = document.createElement('div');
       toast.className = `toast toast-${type}`;
-      const icon = type === 'success' ? '✅' : '⚠️';
-      toast.innerHTML = `<span>${icon}</span> <span>${message}</span>`;
+      const badge = document.createElement('span');
+      badge.className = 'toast-badge';
+      badge.setAttribute('aria-hidden', 'true');
+      badge.textContent = type === 'success' ? '✓' : '!';
+      const msg = document.createElement('span');
+      msg.textContent = message;
+      toast.appendChild(badge);
+      toast.appendChild(msg);
       container.appendChild(toast);
       setTimeout(() => {
         toast.style.opacity = '0';
-        setTimeout(() => toast.remove(), 300);
+        toast.style.transform = 'translateY(8px)';
+        toast.style.transition = 'opacity 200ms ease, transform 200ms ease';
+        setTimeout(() => toast.remove(), 220);
       }, 4000);
     }
 
     function openModal(id) {
       const modal = document.getElementById(id);
-      if (modal) modal.classList.add('active');
+      if (modal) {
+        modal.classList.add('open', 'active');
+        document.body.style.overflow = 'hidden';
+      }
     }
 
     function closeModal(id) {
       const modal = document.getElementById(id);
-      if (modal) modal.classList.remove('active');
+      if (modal) {
+        modal.classList.remove('open', 'active');
+        document.body.style.overflow = '';
+      }
     }
 
     function populateSelects() {
@@ -210,7 +264,7 @@
       const candidateSelect = document.getElementById('select-candidate-user');
 
       if (jobSelect) {
-        jobSelect.innerHTML = '<option value="" disabled selected>Select vacancy position...</option>';
+        jobSelect.innerHTML = '<option value="" disabled selected>Select open position...</option>';
         allJobs.forEach(job => {
           const opt = document.createElement('option');
           opt.value = job.id;
@@ -220,7 +274,7 @@
       }
 
       if (candidateSelect) {
-        candidateSelect.innerHTML = '<option value="" disabled selected>Select candidate / student applicant...</option>';
+        candidateSelect.innerHTML = '<option value="" disabled selected>Select candidate or student applicant...</option>';
         allUsers.forEach(user => {
           const opt = document.createElement('option');
           opt.value = user.id;
@@ -240,17 +294,19 @@
     function renderTable(apps) {
       const tbody = document.getElementById('applications-table-body');
       const emptyState = document.getElementById('empty-state');
+      const table = document.getElementById('applications-table');
       tbody.innerHTML = '';
 
       if (!apps || apps.length === 0) {
+        if (table) table.style.display = 'none';
         emptyState.style.display = 'block';
         return;
       }
+      if (table) table.style.display = 'table';
       emptyState.style.display = 'none';
 
       apps.forEach(app => {
         const tr = document.createElement('tr');
-        tr.style.borderBottom = '1px solid rgba(255, 255, 255, 0.05)';
         tr.dataset.id = app.id;
 
         const candidateName = app.candidateName || allUsers.find(u => u.id === (app.userId || app.user_id))?.name || 'Applicant User';
@@ -258,25 +314,26 @@
         const jobTitle = app.jobTitle || allJobs.find(j => j.id === (app.jobPostingId || app.job_posting_id))?.title || 'Job Vacancy';
         const company = app.company || app.jobCompany || allJobs.find(j => j.id === (app.jobPostingId || app.job_posting_id))?.company || 'Organization';
         const status = (app.status || 'applied').toLowerCase();
-        const dateStr = app.createdAt || app.created_at ? new Date(app.createdAt || app.created_at).toLocaleDateString() : 'Recent';
+        const dateStr = app.createdAt || app.created_at
+          ? new Date(app.createdAt || app.created_at).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' })
+          : 'Recent';
 
+        const safeCandidate = escapeHtml(candidateName);
         tr.innerHTML = `
-          <td style="padding: 1rem 1.25rem;">
-            <div style="font-weight: 600; color: #fff;">${escapeHtml(candidateName)}</div>
-            <div style="font-size: 0.8rem; color: var(--text-muted);">${escapeHtml(candidateEmail)}</div>
+          <td>
+            <div class="cell-primary">${safeCandidate}</div>
+            <div class="cell-secondary">${escapeHtml(candidateEmail)}</div>
           </td>
-          <td style="padding: 1rem 1.25rem;">
-            <div style="font-weight: 600; color: #e2e8f0;">${escapeHtml(jobTitle)}</div>
-            <div style="font-size: 0.85rem; color: var(--primary);">${escapeHtml(company)}</div>
+          <td>
+            <div class="cell-primary">${escapeHtml(jobTitle)}</div>
+            <div class="cell-accent">${escapeHtml(company)}</div>
           </td>
-          <td style="padding: 1rem 1.25rem;">
-            <span class="badge badge-status-${status}">${status.toUpperCase()}</span>
+          <td>
+            <span class="badge badge-status-${escapeHtml(status)}">${escapeHtml(status.toUpperCase())}</span>
           </td>
-          <td style="padding: 1rem 1.25rem; font-size: 0.85rem; color: var(--text-muted);">
-            ${dateStr}
-          </td>
-          <td style="padding: 1rem 1.25rem; text-align: right;">
-            <button class="btn-sm btn-delete btn-delete-app" data-id="${app.id}" data-candidate="${escapeHtml(candidateName)}" style="padding: 0.35rem 0.65rem;">
+          <td class="cell-mono">${escapeHtml(dateStr)}</td>
+          <td class="col-right">
+            <button type="button" class="btn-sm btn-delete btn-delete-app" data-id="${escapeHtml(app.id)}" data-candidate="${safeCandidate}" aria-label="Withdraw application for ${safeCandidate}">
               Withdraw
             </button>
           </td>
@@ -284,16 +341,6 @@
 
         tbody.appendChild(tr);
       });
-    }
-
-    function escapeHtml(str) {
-      if (!str) return '';
-      return String(str)
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;')
-        .replace(/'/g, '&#039;');
     }
 
     function filterApplications() {
@@ -349,7 +396,7 @@
         filterApplications();
       } catch (err) {
         console.error('Failed to load applications data:', err);
-        showToast('Failed to load applications.', 'error');
+        showToast('Unable to load applications.', 'error');
       }
     }
 
@@ -357,6 +404,7 @@
       e.preventDefault();
       const form = e.target;
       const errorDiv = document.getElementById('create-app-error');
+      const submitBtn = document.getElementById('create-app-submit-btn');
       errorDiv.style.display = 'none';
 
       const jobId = document.getElementById('select-job-target').value;
@@ -364,13 +412,15 @@
       const status = document.getElementById('select-app-status').value || 'applied';
 
       if (!jobId || !userId) {
-        errorDiv.textContent = 'Please select both a job vacancy and a candidate applicant.';
+        errorDiv.textContent = 'Select both a target opportunity and a candidate applicant.';
         errorDiv.style.display = 'block';
         return;
       }
 
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Submitting...';
+
       try {
-        // Use nested route: POST /api/jobs/:id/applications
         const res = await fetch(`/api/jobs/${encodeURIComponent(jobId)}/applications`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -379,12 +429,11 @@
 
         const data = await res.json();
 
-        // STRICT BUSINESS RULE: Catch 409 Conflict gracefully
         if (res.status === 409) {
-          const conflictMsg = data.message || 'Candidate has already applied for this job posting';
-          errorDiv.textContent = `⚠️ Conflict: ${conflictMsg}`;
+          const conflictMsg = data.message || 'This candidate has already applied for this opportunity.';
+          errorDiv.textContent = `Duplicate prevented: ${conflictMsg}`;
           errorDiv.style.display = 'block';
-          showToast(`⚠️ Conflict: ${conflictMsg}`, 'error');
+          showToast(conflictMsg, 'error');
           return;
         }
 
@@ -394,17 +443,20 @@
 
         closeModal('modalCreateApplication');
         form.reset();
-        showToast('🎉 Application recorded successfully!');
+        showToast('Application recorded successfully.');
         await loadApplications(true);
       } catch (err) {
         errorDiv.textContent = err.message;
         errorDiv.style.display = 'block';
         showToast(err.message, 'error');
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Record Application';
       }
     }
 
     async function deleteApplication(id, candidateName) {
-      if (!confirm(`Are you sure you want to withdraw the application for "${candidateName}"?`)) {
+      if (!confirm(`Withdraw the application for "${candidateName}"?`)) {
         return;
       }
 
@@ -415,7 +467,7 @@
 
         if (!res.ok) {
           const errData = await res.json();
-          throw new Error(errData.message || 'Failed to delete application.');
+          throw new Error(errData.message || 'Failed to withdraw application.');
         }
 
         showToast('Application withdrawn successfully.');
@@ -490,9 +542,9 @@
 
       const urlParams = new URLSearchParams(window.location.search);
       if (urlParams.get('status') === 'created') {
-        showToast('Application submitted successfully!');
+        showToast('Application submitted successfully.');
       } else if (urlParams.get('status') === 'deleted') {
-        showToast('Application removed.');
+        showToast('Application withdrawn.');
       } else if (urlParams.get('error')) {
         showToast(decodeURIComponent(urlParams.get('error')), 'error');
       }

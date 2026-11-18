@@ -4,53 +4,65 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Alumni Tracking System | Announcements</title>
-  <meta name="description" content="Interactive MVC Announcements bulletin and management portal.">
+  <meta name="description" content="Official campus news, career fairs, academic panels, and alumni reunion bulletins on Alumni Hub.">
+  <link rel="stylesheet" href="/css/tokens.css">
   <link rel="stylesheet" href="/css/style.css">
   <!-- INITIAL_ANNOUNCEMENTS_DATA -->
 </head>
 <body>
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+
   <header>
     <div class="nav-container">
-      <a href="/home" class="brand">
-        🎓 Alumni System
-        <span class="brand-badge">Core v1.0</span>
+      <a href="/home" class="brand" aria-label="Alumni Hub Home">
+        <span class="brand-crest" aria-hidden="true">AH</span>
+        <span>Alumni Hub</span>
+        <span class="brand-badge">Network</span>
       </a>
-      <nav>
+      <button type="button" id="nav-toggle" class="nav-toggle" aria-expanded="false" aria-controls="primary-nav" aria-label="Toggle navigation menu">
+        <svg class="icon-lg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <line x1="3" y1="6" x2="21" y2="6"></line>
+          <line x1="3" y1="12" x2="21" y2="12"></line>
+          <line x1="3" y1="18" x2="21" y2="18"></line>
+        </svg>
+      </button>
+      <nav id="primary-nav" class="primary-nav" aria-label="Primary navigation">
         <ul>
           <li><a href="/home">Home</a></li>
-          <li><a href="/users">Users</a></li>
-          <li><a href="/announcements" class="active">Announcements</a></li>
-          <li><a href="/jobs">Jobs</a></li>
+          <li><a href="/users">Directory</a></li>
+          <li><a href="/jobs">Opportunities</a></li>
           <li><a href="/applications">Applications</a></li>
+          <li><a href="/announcements" class="active" aria-current="page">Bulletins</a></li>
           <li><a href="/about">About</a></li>
-          <li><a href="/api/swagger" target="_blank">Swagger Docs</a></li>
-          <li><a href="/api/announcements" target="_blank">Announcements API</a></li>
-          <li><a href="/api/health" target="_blank">Health</a></li>
+          <li><a href="/api/swagger" target="_blank" rel="noopener noreferrer">API Docs</a></li>
         </ul>
       </nav>
     </div>
   </header>
 
   <main>
-    <section class="hero" style="padding-bottom: 1.5rem;">
-      <div class="hero-tag">MVC Architecture &bull; In-Memory Data Store</div>
-      <h1>Announcements &amp; Bulletins</h1>
-      <p>
-        Stay connected with campus news, career networking fairs, academic lectures, and alumni events. 
-        Publish, update, and manage official bulletins in real-time.
-      </p>
+    <div id="main-content" tabindex="-1"></div>
+    <section class="page-header" aria-labelledby="announcements-heading">
+      <div class="page-header-copy">
+        <div class="hero-tag">Institutional Pulse &bull; Official Notices</div>
+        <h1 id="announcements-heading">Announcements &amp; Bulletins</h1>
+        <p>
+          Stay informed on academic lectures, career fairs, and alumni reunions. Publish, prioritize, and update official campus bulletins in real time.
+        </p>
+      </div>
       <div class="btn-group">
-        <button id="btnPostAnnouncement" class="btn btn-primary" onclick="openCreateModal()">
-          📢 Post Announcement
+        <button type="button" id="btnPostAnnouncement" class="btn btn-primary">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <line x1="12" y1="5" x2="12" y2="19"></line>
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+          </svg>
+          Post Announcement
         </button>
-        <a href="/api/announcements" class="btn btn-secondary" target="_blank">
-          ⚡ Raw JSON API
-        </a>
+        <a href="/api/announcements" class="btn btn-secondary" target="_blank" rel="noopener noreferrer">JSON API</a>
       </div>
     </section>
 
-    <!-- Metrics Overview -->
-    <section class="stats-grid">
+    <section class="stats-grid" aria-label="Bulletin metrics">
       <div class="stat-box">
         <div id="stat-total" class="stat-num">0</div>
         <div class="stat-label">Total Bulletins</div>
@@ -61,7 +73,7 @@
       </div>
       <div class="stat-box">
         <div id="stat-career" class="stat-num">0</div>
-        <div class="stat-label">Career &amp; Jobs</div>
+        <div class="stat-label">Career &amp; Recruiting</div>
       </div>
       <div class="stat-box">
         <div id="stat-social" class="stat-num">0</div>
@@ -69,24 +81,25 @@
       </div>
     </section>
 
-    <!-- Toolbar Controls -->
-    <section class="card" style="padding: 1.25rem 1.5rem; margin-bottom: 1.5rem;">
-      <div class="toolbar" style="margin-bottom: 0;">
+    <section class="toolbar-card" aria-label="Search and filter bulletins">
+      <div class="toolbar">
         <div class="toolbar-left">
+          <label for="search-input" class="sr-only">Search title, content, or author</label>
           <input
             type="text"
             id="search-input"
             class="search-input"
-            placeholder="🔍 Search title, content, or author..."
-            oninput="handleSearch()"
+            placeholder="Search headline, details, or issuing office..."
           />
-          <select id="category-filter" class="filter-select" onchange="handleFilter()">
+          <label for="category-filter" class="sr-only">Filter by category</label>
+          <select id="category-filter" class="filter-select">
             <option value="all">All Categories</option>
             <option value="academic">Academic</option>
             <option value="career">Career</option>
             <option value="social">Social</option>
           </select>
-          <select id="priority-filter" class="filter-select" onchange="handleFilter()">
+          <label for="priority-filter" class="sr-only">Filter by priority</label>
+          <select id="priority-filter" class="filter-select">
             <option value="all">All Priorities</option>
             <option value="urgent">Urgent</option>
             <option value="normal">Normal</option>
@@ -94,55 +107,75 @@
           </select>
         </div>
         <div>
-          <button class="btn-sm btn-view" onclick="loadAnnouncements(true)">🔄 Refresh</button>
+          <button type="button" id="btn-refresh-announcements" class="btn-sm btn-view">Refresh</button>
         </div>
       </div>
     </section>
 
-    <!-- Announcements Cards Grid -->
-    <section>
+    <section aria-label="Published announcements">
       <div id="announcements-grid" class="announcement-grid">
         <!-- Dynamically rendered announcement cards -->
       </div>
       <div id="empty-state" class="empty-state" style="display: none;">
-        <div class="empty-icon">📭</div>
-        <h3>No announcements found</h3>
-        <p>No bulletin records matched your search query or filter criteria.</p>
+        <div class="empty-icon" aria-hidden="true">
+          <svg class="icon-lg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+            <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+          </svg>
+        </div>
+        <h3>No matching announcements found</h3>
+        <p>Try resetting your category or priority filters, or publish a new campus bulletin.</p>
       </div>
     </section>
   </main>
 
   <footer>
-    <p>&copy; 2026 Alumni Tracking System &bull; MVC In-Memory Implementation &bull; Week 4 Homework</p>
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <span class="footer-brand-name">Alumni Hub</span>
+        <span class="footer-tagline">Where Academic Legacy Meets Career Momentum.</span>
+      </div>
+      <div class="footer-links">
+        <a href="/home">Home</a>
+        <a href="/users">Directory</a>
+        <a href="/jobs">Opportunities</a>
+        <a href="/applications">Applications</a>
+        <a href="/announcements">Bulletins</a>
+        <a href="/about">About</a>
+        <a href="/api/swagger" target="_blank" rel="noopener noreferrer">Swagger API</a>
+      </div>
+      <div class="footer-copy">
+        <span>&copy; 2026 Alumni Hub &bull; Powered by Alumni Tracking System</span>
+        <span>Official Campus Bulletins</span>
+      </div>
+    </div>
   </footer>
 
-  <!-- ========================================================================= -->
   <!-- MODAL: CREATE ANNOUNCEMENT -->
-  <!-- ========================================================================= -->
-  <div id="modalCreateAnnouncement" class="modal-overlay" data-modal="create-modal" onclick="handleBackdropClick(event, 'modalCreateAnnouncement')">
-    <div class="modal-dialog">
+  <div id="modalCreateAnnouncement" class="modal-overlay" data-modal="create-modal" role="dialog" aria-modal="true" aria-labelledby="modal-create-ann-title">
+    <div class="modal-dialog modal-dialog-wide">
       <div class="modal-header">
-        <h3 class="modal-title">Post New Announcement</h3>
-        <button class="modal-close" data-close-modal="modalCreateAnnouncement" onclick="closeModal('modalCreateAnnouncement')">&times;</button>
+        <h3 id="modal-create-ann-title" class="modal-title">Post New Announcement</h3>
+        <button type="button" class="modal-close" data-close-modal="modalCreateAnnouncement" aria-label="Close modal">&times;</button>
       </div>
-      <form id="create-announcement-form" action="/announcements" method="POST" onsubmit="handleCreateSubmit(event)">
+      <form id="create-announcement-form" action="/announcements" method="POST">
         <div class="modal-body">
           <div class="form-group">
-            <label class="form-label" for="create-title">Headline Title *</label>
-            <input type="text" id="create-title" name="title" class="form-control" placeholder="e.g. Annual Alumni Gala 2026" required minlength="3">
+            <label class="form-label" for="create-title">Headline Title <span class="form-required">*</span></label>
+            <input type="text" id="create-title" name="title" class="form-control" placeholder="e.g., Annual Alumni Homecoming 2026" required minlength="3" aria-required="true">
           </div>
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+          <div class="form-row-2">
             <div class="form-group">
-              <label class="form-label" for="create-category">Category *</label>
-              <select id="create-category" name="category" class="form-control" required>
+              <label class="form-label" for="create-category">Category <span class="form-required">*</span></label>
+              <select id="create-category" name="category" class="form-control" required aria-required="true">
                 <option value="academic">Academic</option>
                 <option value="career" selected>Career</option>
                 <option value="social">Social</option>
               </select>
             </div>
             <div class="form-group">
-              <label class="form-label" for="create-priority">Priority *</label>
-              <select id="create-priority" name="priority" class="form-control" required>
+              <label class="form-label" for="create-priority">Priority <span class="form-required">*</span></label>
+              <select id="create-priority" name="priority" class="form-control" required aria-required="true">
                 <option value="normal" selected>Normal</option>
                 <option value="urgent">Urgent</option>
                 <option value="low">Low</option>
@@ -150,53 +183,49 @@
             </div>
           </div>
           <div class="form-group">
-            <label class="form-label" for="create-author">Author / Office *</label>
-            <input type="text" id="create-author" name="author" class="form-control" placeholder="e.g. Alumni Relations Office" required minlength="2">
+            <label class="form-label" for="create-author">Issuing Office / Author <span class="form-required">*</span></label>
+            <input type="text" id="create-author" name="author" class="form-control" placeholder="e.g., Alumni Relations Office" required minlength="2" aria-required="true">
           </div>
           <div class="form-group">
-            <label class="form-label" for="create-content">Announcement Details *</label>
-            <textarea id="create-content" name="content" class="form-control" rows="4" placeholder="Detailed bulletin information..." required minlength="5"></textarea>
+            <label class="form-label" for="create-content">Announcement Details <span class="form-required">*</span></label>
+            <textarea id="create-content" name="content" class="form-control" rows="4" placeholder="Event date, location, eligibility, and registration instructions..." required minlength="5" aria-required="true"></textarea>
           </div>
-          <div id="create-general-error" class="form-error" style="display: none;"></div>
+          <div id="create-general-error" class="form-error" role="alert"></div>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn-sm btn-view" data-close-modal="modalCreateAnnouncement" onclick="closeModal('modalCreateAnnouncement')">Cancel</button>
-          <button type="submit" id="create-submit-btn" class="btn-sm btn-edit" style="background: var(--primary); color: #fff;">
-            Publish Announcement
-          </button>
+          <button type="button" class="btn-sm btn-view" data-close-modal="modalCreateAnnouncement">Cancel</button>
+          <button type="submit" id="create-submit-btn" class="btn-sm btn-primary">Publish Announcement</button>
         </div>
       </form>
     </div>
   </div>
 
-  <!-- ========================================================================= -->
   <!-- MODAL: EDIT ANNOUNCEMENT -->
-  <!-- ========================================================================= -->
-  <div id="modalEditAnnouncement" class="modal-overlay" data-modal="edit-modal" onclick="handleBackdropClick(event, 'modalEditAnnouncement')">
-    <div class="modal-dialog">
+  <div id="modalEditAnnouncement" class="modal-overlay" data-modal="edit-modal" role="dialog" aria-modal="true" aria-labelledby="modal-edit-ann-title">
+    <div class="modal-dialog modal-dialog-wide">
       <div class="modal-header">
-        <h3 class="modal-title">Edit Announcement</h3>
-        <button class="modal-close" data-close-modal="modalEditAnnouncement" onclick="closeModal('modalEditAnnouncement')">&times;</button>
+        <h3 id="modal-edit-ann-title" class="modal-title">Edit Announcement</h3>
+        <button type="button" class="modal-close" data-close-modal="modalEditAnnouncement" aria-label="Close modal">&times;</button>
       </div>
-      <form id="edit-announcement-form" onsubmit="handleEditSubmit(event)">
+      <form id="edit-announcement-form">
         <input type="hidden" id="edit-id" name="id">
         <div class="modal-body">
           <div class="form-group">
-            <label class="form-label" for="edit-title">Headline Title *</label>
-            <input type="text" id="edit-title" name="title" class="form-control" required minlength="3">
+            <label class="form-label" for="edit-title">Headline Title <span class="form-required">*</span></label>
+            <input type="text" id="edit-title" name="title" class="form-control" required minlength="3" aria-required="true">
           </div>
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+          <div class="form-row-2">
             <div class="form-group">
-              <label class="form-label" for="edit-category">Category *</label>
-              <select id="edit-category" name="category" class="form-control" required>
+              <label class="form-label" for="edit-category">Category <span class="form-required">*</span></label>
+              <select id="edit-category" name="category" class="form-control" required aria-required="true">
                 <option value="academic">Academic</option>
                 <option value="career">Career</option>
                 <option value="social">Social</option>
               </select>
             </div>
             <div class="form-group">
-              <label class="form-label" for="edit-priority">Priority *</label>
-              <select id="edit-priority" name="priority" class="form-control" required>
+              <label class="form-label" for="edit-priority">Priority <span class="form-required">*</span></label>
+              <select id="edit-priority" name="priority" class="form-control" required aria-required="true">
                 <option value="urgent">Urgent</option>
                 <option value="normal">Normal</option>
                 <option value="low">Low</option>
@@ -204,84 +233,73 @@
             </div>
           </div>
           <div class="form-group">
-            <label class="form-label" for="edit-author">Author / Office *</label>
-            <input type="text" id="edit-author" name="author" class="form-control" required minlength="2">
+            <label class="form-label" for="edit-author">Issuing Office / Author <span class="form-required">*</span></label>
+            <input type="text" id="edit-author" name="author" class="form-control" required minlength="2" aria-required="true">
           </div>
           <div class="form-group">
-            <label class="form-label" for="edit-content">Announcement Details *</label>
-            <textarea id="edit-content" name="content" class="form-control" rows="4" required minlength="5"></textarea>
+            <label class="form-label" for="edit-content">Announcement Details <span class="form-required">*</span></label>
+            <textarea id="edit-content" name="content" class="form-control" rows="4" required minlength="5" aria-required="true"></textarea>
           </div>
-          <div id="edit-general-error" class="form-error" style="display: none;"></div>
+          <div id="edit-general-error" class="form-error" role="alert"></div>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn-sm btn-view" data-close-modal="modalEditAnnouncement" onclick="closeModal('modalEditAnnouncement')">Cancel</button>
-          <button type="submit" id="edit-submit-btn" class="btn-sm btn-edit" style="background: var(--primary); color: #fff;">
-            Update Announcement
-          </button>
+          <button type="button" class="btn-sm btn-view" data-close-modal="modalEditAnnouncement">Cancel</button>
+          <button type="submit" id="edit-submit-btn" class="btn-sm btn-primary">Update Announcement</button>
         </div>
       </form>
     </div>
   </div>
 
-  <!-- ========================================================================= -->
   <!-- MODAL: VIEW ANNOUNCEMENT DETAIL -->
-  <!-- ========================================================================= -->
-  <div id="modalViewAnnouncement" class="modal-overlay" data-modal="view-modal" onclick="handleBackdropClick(event, 'modalViewAnnouncement')">
-    <div class="modal-dialog" style="max-width: 540px;">
+  <div id="modalViewAnnouncement" class="modal-overlay" data-modal="view-modal" role="dialog" aria-modal="true" aria-labelledby="view-title">
+    <div class="modal-dialog modal-dialog-wide">
       <div class="modal-header">
         <h3 class="modal-title">Bulletin Details</h3>
-        <button class="modal-close" data-close-modal="modalViewAnnouncement" onclick="closeModal('modalViewAnnouncement')">&times;</button>
+        <button type="button" class="modal-close" data-close-modal="modalViewAnnouncement" aria-label="Close modal">&times;</button>
       </div>
       <div class="modal-body">
-        <div style="display: flex; gap: 0.5rem; margin-bottom: 0.75rem;">
+        <div class="announcement-badges" style="margin-bottom: var(--space-3);">
           <span id="view-category-badge" class="badge"></span>
           <span id="view-priority-badge" class="badge"></span>
         </div>
-        <h2 id="view-title" style="color: #fff; font-size: 1.4rem; line-height: 1.3; margin-bottom: 0.75rem;"></h2>
-        <div style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1.25rem;">
-          Issued by <strong id="view-author" style="color: #e2e8f0;"></strong> on <span id="view-date"></span>
+        <h2 id="view-title" style="font-size: var(--text-h2); margin-bottom: var(--space-2);"></h2>
+        <div class="detail-row-muted" style="margin-bottom: var(--space-5);">
+          Issued by <strong id="view-author" class="cell-primary"></strong> on <span id="view-date"></span>
         </div>
-        <div id="view-content" style="color: #cbd5e1; font-size: 1rem; line-height: 1.6; white-space: pre-wrap; background: rgba(0,0,0,0.25); padding: 1.25rem; border-radius: 8px; border: 1px solid var(--card-border); margin-bottom: 1rem;"></div>
-        <div style="font-size: 0.75rem; color: var(--text-muted);">
-          UUID: <code id="view-id" style="color: #93c5fd;"></code>
+        <div id="view-content" class="detail-prose" style="margin-bottom: var(--space-4);"></div>
+        <div class="detail-row-muted">
+          Bulletin UUID: <code id="view-id"></code>
         </div>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn-sm btn-view" data-close-modal="modalViewAnnouncement" onclick="closeModal('modalViewAnnouncement')">Close</button>
+        <button type="button" class="btn-sm btn-view" data-close-modal="modalViewAnnouncement">Close</button>
       </div>
     </div>
   </div>
 
-  <!-- ========================================================================= -->
   <!-- MODAL: DELETE CONFIRMATION -->
-  <!-- ========================================================================= -->
-  <div id="modalDeleteAnnouncement" class="modal-overlay" data-modal="delete-modal" onclick="handleBackdropClick(event, 'modalDeleteAnnouncement')">
+  <div id="modalDeleteAnnouncement" class="modal-overlay" data-modal="delete-modal" role="dialog" aria-modal="true" aria-labelledby="modal-delete-ann-title">
     <div class="modal-dialog">
       <div class="modal-header">
-        <h3 class="modal-title" style="color: #f87171;">Confirm Deletion</h3>
-        <button class="modal-close" data-close-modal="modalDeleteAnnouncement" onclick="closeModal('modalDeleteAnnouncement')">&times;</button>
+        <h3 id="modal-delete-ann-title" class="modal-title modal-title-danger">Remove Bulletin</h3>
+        <button type="button" class="modal-close" data-close-modal="modalDeleteAnnouncement" aria-label="Close modal">&times;</button>
       </div>
       <div class="modal-body">
-        <p>Are you sure you want to remove bulletin <strong id="delete-item-title" style="color: #fff;"></strong>?</p>
-        <p style="color: var(--text-muted); font-size: 0.85rem; margin-top: 0.5rem;">
-          This item will be permanently removed from the in-memory board.
+        <p>Are you sure you want to remove <strong id="delete-item-title" class="cell-primary"></strong>?</p>
+        <p class="detail-row-muted" style="margin-top: var(--space-2);">
+          This bulletin will be permanently removed from the board.
         </p>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn-sm btn-view" data-close-modal="modalDeleteAnnouncement" onclick="closeModal('modalDeleteAnnouncement')">Cancel</button>
-        <button type="button" id="confirm-delete-btn" class="btn-sm btn-delete" onclick="executeDelete()">
-          🗑️ Delete Bulletin
-        </button>
+        <button type="button" class="btn-sm btn-view" data-close-modal="modalDeleteAnnouncement">Cancel</button>
+        <button type="button" id="confirm-delete-btn" class="btn-sm btn-danger">Delete Bulletin</button>
       </div>
     </div>
   </div>
 
-  <!-- Toast Notification Container -->
-  <div id="toast-container" class="toast-container"></div>
+  <div id="toast-container" class="toast-container" role="status" aria-live="polite"></div>
 
-  <!-- ========================================================================= -->
-  <!-- CLIENT LOGIC & REACTIVE IN-MEMORY CRUD -->
-  <!-- ========================================================================= -->
+  <script src="/js/nav.js"></script>
   <script>
     let announcementsList = [];
     let pendingDeleteId = null;
@@ -316,21 +334,37 @@
       }
     }
 
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
     function showToast(message, type = 'success') {
       const container = document.getElementById('toast-container');
       const toast = document.createElement('div');
       toast.className = `toast ${type === 'success' ? 'toast-success' : 'toast-error'}`;
-      toast.innerHTML = `<span>${type === 'success' ? '✅' : '⚠️'}</span><span>${message}</span>`;
+      const badge = document.createElement('span');
+      badge.className = 'toast-badge';
+      badge.setAttribute('aria-hidden', 'true');
+      badge.textContent = type === 'success' ? '✓' : '!';
+      const msg = document.createElement('span');
+      msg.textContent = message;
+      toast.appendChild(badge);
+      toast.appendChild(msg);
       container.appendChild(toast);
       setTimeout(() => {
         toast.style.opacity = '0';
-        toast.style.transform = 'translateY(10px)';
-        toast.style.transition = 'all 0.3s ease';
-        setTimeout(() => toast.remove(), 300);
-      }, 3500);
+        toast.style.transform = 'translateY(8px)';
+        toast.style.transition = 'opacity 200ms ease, transform 200ms ease';
+        setTimeout(() => toast.remove(), 220);
+      }, 3800);
     }
 
-    // Modal helpers with bidirectional ID resolution
     function resolveModal(id) {
       if (!id) return null;
       let modal = document.getElementById(id);
@@ -355,8 +389,7 @@
     function openModal(id) {
       const modal = resolveModal(id);
       if (modal) {
-        modal.classList.add('open');
-        modal.classList.add('active');
+        modal.classList.add('open', 'active');
         document.body.style.overflow = 'hidden';
       }
     }
@@ -364,15 +397,8 @@
     function closeModal(id) {
       const modal = resolveModal(id);
       if (modal) {
-        modal.classList.remove('open');
-        modal.classList.remove('active');
+        modal.classList.remove('open', 'active');
         document.body.style.overflow = '';
-      }
-    }
-
-    function handleBackdropClick(event, modalId) {
-      if (event.target.id === modalId || event.target.dataset.modal === modalId) {
-        closeModal(modalId);
       }
     }
 
@@ -385,7 +411,7 @@
       setTimeout(() => {
         const input = document.getElementById('create-title');
         if (input) input.focus();
-      }, 100);
+      }, 80);
     }
 
     function updateStats() {
@@ -413,6 +439,7 @@
         const card = document.createElement('article');
         card.className = 'announcement-card';
         card.id = `announcement-card-${item.id}`;
+        const safeTitle = escapeHtml(item.title);
         card.innerHTML = `
           <div>
             <div class="announcement-header">
@@ -420,34 +447,24 @@
                 <span class="badge ${getCategoryBadgeClass(item.category)}">${escapeHtml(item.category)}</span>
                 <span class="badge ${getPriorityBadgeClass(item.priority)}">${escapeHtml(item.priority)}</span>
               </div>
+              <span class="cell-mono">${escapeHtml(formatDate(item.createdAt))}</span>
             </div>
-            <h3 class="announcement-title">${escapeHtml(item.title)}</h3>
+            <h3 class="announcement-title">${safeTitle}</h3>
             <p class="announcement-content">${escapeHtml(item.content)}</p>
           </div>
           <div class="announcement-footer">
             <div>
               <span class="announcement-author">${escapeHtml(item.author)}</span>
-              <span style="opacity: 0.6;"> &bull; ${formatDate(item.createdAt)}</span>
             </div>
             <div class="action-group">
-              <button class="btn-sm btn-view" title="Inspect" data-action="view" data-id="${item.id}" onclick="viewAnnouncement('${item.id}')">View</button>
-              <button class="btn-sm btn-edit" title="Edit" data-action="edit" data-id="${item.id}" onclick="openEditModal('${item.id}')">Edit</button>
-              <button class="btn-sm btn-delete" title="Delete" data-action="delete" data-id="${item.id}" data-title="${escapeHtml(item.title)}" onclick="promptDelete('${item.id}', '${escapeHtml(item.title)}')">Delete</button>
+              <button type="button" class="btn-sm btn-view" data-action="view" data-id="${escapeHtml(item.id)}" aria-label="View ${safeTitle}">View</button>
+              <button type="button" class="btn-sm btn-edit" data-action="edit" data-id="${escapeHtml(item.id)}" aria-label="Edit ${safeTitle}">Edit</button>
+              <button type="button" class="btn-sm btn-delete" data-action="delete" data-id="${escapeHtml(item.id)}" data-title="${safeTitle}" aria-label="Delete ${safeTitle}">Delete</button>
             </div>
           </div>
         `;
         grid.appendChild(card);
       });
-    }
-
-    function escapeHtml(str) {
-      if (!str) return '';
-      return String(str)
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;')
-        .replace(/'/g, '&#039;');
     }
 
     function applyFilters() {
@@ -467,9 +484,6 @@
 
       renderGrid(filtered);
     }
-
-    function handleSearch() { applyFilters(); }
-    function handleFilter() { applyFilters(); }
 
     function loadAnnouncements(forceFetch = false) {
       const initialScript = document.getElementById('initial-announcements-data');
@@ -493,7 +507,7 @@
         })
         .catch(err => {
           console.error('Failed to fetch announcements', err);
-          showToast('Failed to load announcements from API', 'error');
+          showToast('Unable to load announcements from the API.', 'error');
         });
     }
 
@@ -566,30 +580,30 @@
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ title, category, priority, author, content })
       })
-      .then(async res => {
-        const data = await res.json();
-        if (!res.ok) {
-          throw new Error(data.message || (data.details ? data.details.join(', ') : 'Failed to create announcement'));
-        }
-        return data;
-      })
-      .then(newItem => {
-        announcementsList.unshift(newItem);
-        updateStats();
-        applyFilters();
-        closeModal('modalCreateAnnouncement');
-        const form = document.getElementById('create-announcement-form');
-        if (form) form.reset();
-        showToast(`Announcement "${newItem.title}" published!`);
-      })
-      .catch(err => {
-        errBox.textContent = err.message;
-        errBox.style.display = 'block';
-      })
-      .finally(() => {
-        submitBtn.disabled = false;
-        submitBtn.textContent = 'Publish Announcement';
-      });
+        .then(async res => {
+          const data = await res.json();
+          if (!res.ok) {
+            throw new Error(data.message || (data.details ? data.details.join(', ') : 'Failed to create announcement'));
+          }
+          return data;
+        })
+        .then(newItem => {
+          announcementsList.unshift(newItem);
+          updateStats();
+          applyFilters();
+          closeModal('modalCreateAnnouncement');
+          const form = document.getElementById('create-announcement-form');
+          if (form) form.reset();
+          showToast(`Bulletin "${newItem.title}" published.`);
+        })
+        .catch(err => {
+          errBox.textContent = err.message;
+          errBox.style.display = 'block';
+        })
+        .finally(() => {
+          submitBtn.disabled = false;
+          submitBtn.textContent = 'Publish Announcement';
+        });
     }
 
     function handleEditSubmit(event) {
@@ -612,31 +626,31 @@
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ title, category, priority, author, content })
       })
-      .then(async res => {
-        const data = await res.json();
-        if (!res.ok) {
-          throw new Error(data.message || (data.details ? data.details.join(', ') : 'Failed to update announcement'));
-        }
-        return data;
-      })
-      .then(updatedItem => {
-        const index = announcementsList.findIndex(a => a.id === id);
-        if (index !== -1) {
-          announcementsList[index] = updatedItem;
-        }
-        updateStats();
-        applyFilters();
-        closeModal('modalEditAnnouncement');
-        showToast(`Announcement "${updatedItem.title}" updated!`);
-      })
-      .catch(err => {
-        errBox.textContent = err.message;
-        errBox.style.display = 'block';
-      })
-      .finally(() => {
-        submitBtn.disabled = false;
-        submitBtn.textContent = 'Update Announcement';
-      });
+        .then(async res => {
+          const data = await res.json();
+          if (!res.ok) {
+            throw new Error(data.message || (data.details ? data.details.join(', ') : 'Failed to update announcement'));
+          }
+          return data;
+        })
+        .then(updatedItem => {
+          const index = announcementsList.findIndex(a => a.id === id);
+          if (index !== -1) {
+            announcementsList[index] = updatedItem;
+          }
+          updateStats();
+          applyFilters();
+          closeModal('modalEditAnnouncement');
+          showToast(`Bulletin "${updatedItem.title}" updated.`);
+        })
+        .catch(err => {
+          errBox.textContent = err.message;
+          errBox.style.display = 'block';
+        })
+        .finally(() => {
+          submitBtn.disabled = false;
+          submitBtn.textContent = 'Update Announcement';
+        });
     }
 
     function promptDelete(id, title) {
@@ -665,7 +679,7 @@
           updateStats();
           applyFilters();
           closeModal('modalDeleteAnnouncement');
-          showToast('Announcement removed successfully.');
+          showToast('Bulletin removed.');
         })
         .catch(err => {
           showToast(err.message, 'error');
@@ -673,13 +687,11 @@
         .finally(() => {
           pendingDeleteId = null;
           deleteBtn.disabled = false;
-          deleteBtn.textContent = '🗑️ Delete Bulletin';
+          deleteBtn.textContent = 'Delete Bulletin';
         });
     }
 
-    // Attach Clean DOM Event Listeners
     function attachEventListeners() {
-      // Primary "Post Announcement" button
       const btnPost = document.getElementById('btnPostAnnouncement') || document.getElementById('open-create-btn');
       if (btnPost) {
         btnPost.addEventListener('click', (e) => {
@@ -688,19 +700,21 @@
         });
       }
 
-      // Create form submit
+      const btnRefresh = document.getElementById('btn-refresh-announcements');
+      if (btnRefresh) {
+        btnRefresh.addEventListener('click', () => loadAnnouncements(true));
+      }
+
       const createForm = document.getElementById('create-announcement-form');
       if (createForm) {
         createForm.addEventListener('submit', handleCreateSubmit);
       }
 
-      // Edit form submit
       const editForm = document.getElementById('edit-announcement-form');
       if (editForm) {
         editForm.addEventListener('submit', handleEditSubmit);
       }
 
-      // Confirm delete button
       const confirmDeleteBtn = document.getElementById('confirm-delete-btn');
       if (confirmDeleteBtn) {
         confirmDeleteBtn.addEventListener('click', (e) => {
@@ -709,7 +723,6 @@
         });
       }
 
-      // Live search and filter controls
       const searchInput = document.getElementById('search-input');
       if (searchInput) {
         searchInput.addEventListener('input', applyFilters);
@@ -725,7 +738,6 @@
         prioFilter.addEventListener('change', applyFilters);
       }
 
-      // Card Grid Action Delegated Click Listener (View, Edit, Delete)
       const grid = document.getElementById('announcements-grid');
       if (grid) {
         grid.addEventListener('click', (e) => {
@@ -744,12 +756,9 @@
         });
       }
 
-      // Modal close buttons & Cancel buttons
       document.querySelectorAll('.modal-overlay').forEach(overlay => {
         overlay.addEventListener('click', (e) => {
-          if (e.target === overlay) {
-            closeModal(overlay.id);
-          }
+          if (e.target === overlay) closeModal(overlay.id);
         });
       });
 
@@ -773,9 +782,9 @@
 
       const urlParams = new URLSearchParams(window.location.search);
       if (urlParams.get('status') === 'created') {
-        showToast('New announcement published via form POST!');
+        showToast('Announcement published.');
       } else if (urlParams.get('status') === 'deleted') {
-        showToast('Announcement removed!');
+        showToast('Bulletin removed.');
       } else if (urlParams.get('error')) {
         showToast(decodeURIComponent(urlParams.get('error')), 'error');
       } else if (urlParams.get('view')) {

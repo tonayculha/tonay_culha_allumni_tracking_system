@@ -3,144 +3,230 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Alumni Tracking System | Architecture & About</title>
-  <meta name="description" content="Technical specifications, architecture, and design philosophy of the Alumni Tracking System.">
+  <title>Alumni Tracking System | Architecture &amp; About</title>
+  <meta name="description" content="System architecture, brand & design system governance, technology stack, and API directory for Alumni Hub.">
+  <link rel="stylesheet" href="/css/tokens.css">
   <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+
   <header>
     <div class="nav-container">
-      <a href="/home" class="brand">
-        🎓 Alumni System
-        <span class="brand-badge">Core v1.0</span>
+      <a href="/home" class="brand" aria-label="Alumni Hub Home">
+        <span class="brand-crest" aria-hidden="true">AH</span>
+        <span>Alumni Hub</span>
+        <span class="brand-badge">Network</span>
       </a>
-      <nav>
+      <button type="button" id="nav-toggle" class="nav-toggle" aria-expanded="false" aria-controls="primary-nav" aria-label="Toggle navigation menu">
+        <svg class="icon-lg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <line x1="3" y1="6" x2="21" y2="6"></line>
+          <line x1="3" y1="12" x2="21" y2="12"></line>
+          <line x1="3" y1="18" x2="21" y2="18"></line>
+        </svg>
+      </button>
+      <nav id="primary-nav" class="primary-nav" aria-label="Primary navigation">
         <ul>
           <li><a href="/home">Home</a></li>
-          <li><a href="/users">Users</a></li>
-          <li><a href="/announcements">Announcements</a></li>
-          <li><a href="/jobs">Jobs</a></li>
+          <li><a href="/users">Directory</a></li>
+          <li><a href="/jobs">Opportunities</a></li>
           <li><a href="/applications">Applications</a></li>
-          <li><a href="/about" class="active">About</a></li>
-          <li><a href="/api/swagger" target="_blank">Swagger Docs</a></li>
-          <li><a href="/api/health" target="_blank">Health</a></li>
+          <li><a href="/announcements">Bulletins</a></li>
+          <li><a href="/about" class="active" aria-current="page">About</a></li>
+          <li><a href="/api/swagger" target="_blank" rel="noopener noreferrer">API Docs</a></li>
         </ul>
       </nav>
     </div>
   </header>
 
   <main>
-    <section class="hero">
-      <div class="hero-tag">System Design & Specifications</div>
-      <h1>About the Project</h1>
-      <p>
-        Engineered as an independent, clean-room implementation of the Alumni Tracking System coursework, 
-        emphasizing enterprise architectural patterns, containerization, and zero-touch deployment.
-      </p>
-    </section>
-
-    <section class="card" style="margin-bottom: 2rem;">
-      <h3>🎯 Architectural Philosophy</h3>
-      <p style="margin-top: 0.5rem;">
-        This implementation avoids monolithic, single-file scripts in favor of a clean layered structure. 
-        Each layer has a single responsibility: routing delegates to controllers, controllers orchestrate input/output, 
-        and services execute domain business logic and numeric validation.
-      </p>
-    </section>
-
-    <section class="card" style="margin-bottom: 2rem;">
-      <h3>📋 Technology Stack & Environment</h3>
-      <div class="table-responsive">
-        <table>
-          <thead>
-            <tr>
-              <th>Component</th>
-              <th>Technology</th>
-              <th>Version / Details</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>Runtime</td>
-              <td>Node.js</td>
-              <td>v20+ LTS (Alpine Linux in Docker)</td>
-            </tr>
-            <tr>
-              <td>HTTP Framework</td>
-              <td>Express</td>
-              <td>v4.19+ with Helmet security headers & Morgan logging</td>
-            </tr>
-            <tr>
-              <td>Database</td>
-              <td>PostgreSQL</td>
-              <td>16-Alpine with isolated persistent volume</td>
-            </tr>
-            <tr>
-              <td>Containerization</td>
-              <td>Docker & Compose</td>
-              <td>Multi-container orchestration with dependency health checks</td>
-            </tr>
-            <tr>
-              <td>Deployment Rule</td>
-              <td>One-Command Rule</td>
-              <td><code>docker compose up --build</code></td>
-            </tr>
-          </tbody>
-        </table>
+    <div id="main-content" class="container-reading" tabindex="-1">
+    <section class="page-header" aria-labelledby="about-heading">
+      <div class="page-header-copy">
+        <div class="hero-tag">System Architecture &amp; Design Governance</div>
+        <h1 id="about-heading">About the Project</h1>
+        <p>
+          Alumni Hub is a clean-room implementation of the Alumni Tracking System engineered with modular MVC layering,
+          PostgreSQL persistence, defensive middleware guardians, and the WCAG 2.1 AA Collegiate Obsidian design system.
+        </p>
+      </div>
+      <div class="btn-group">
+        <a href="/api/swagger" class="btn btn-primary" target="_blank" rel="noopener noreferrer">OpenAPI Docs</a>
+        <a href="/api/health" class="btn btn-secondary" target="_blank" rel="noopener noreferrer">Health Probe</a>
       </div>
     </section>
 
-    <section class="card">
-      <h3>🛣️ Endpoint Directory & Contract</h3>
-      <div class="table-responsive">
-        <table>
-          <thead>
-            <tr>
-              <th>Method</th>
-              <th>Path</th>
-              <th>Description</th>
-              <th>Expected Output</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td><code>GET</code></td>
-              <td><code>/</code> or <code>/health</code></td>
-              <td>System health check</td>
-              <td><code>application/json</code> (status, uptime, memory, db check)</td>
-            </tr>
-            <tr>
-              <td><code>GET</code></td>
-              <td><code>/hello/:name</code></td>
-              <td>Parametric greeting</td>
-              <td><code>application/json</code> with sanitized name</td>
-            </tr>
-            <tr>
-              <td><code>GET</code></td>
-              <td><code>/sum/:number1/:number2</code></td>
-              <td>Numeric summation with strict validation</td>
-              <td><code>application/json</code> (HTTP 200 on success, HTTP 400 on NaN)</td>
-            </tr>
-            <tr>
-              <td><code>GET</code></td>
-              <td><code>/home</code></td>
-              <td>Platform overview view</td>
-              <td><code>text/html</code> (Semantic HTML5)</td>
-            </tr>
-            <tr>
-              <td><code>GET</code></td>
-              <td><code>/about</code></td>
-              <td>Architecture & specifications view</td>
-              <td><code>text/html</code> (Semantic HTML5)</td>
-            </tr>
-          </tbody>
-        </table>
+    <section class="grid-2" aria-label="Architecture and design pillars">
+      <article class="card">
+        <div class="section-kicker">Software Engineering</div>
+        <h3>Layered MVC &amp; Reliability</h3>
+        <p>
+          Routes delegate cleanly to dual controllers (human MVC views vs. pure JSON REST APIs), services enforce domain rules
+          such as <code>409 Conflict</code> duplicate-application prevention, and 404/5xx guardian middleware protects every request.
+        </p>
+      </article>
+
+      <article class="card">
+        <div class="section-kicker">Brand &amp; UI Craft</div>
+        <h3>Collegiate Obsidian System</h3>
+        <p>
+          Governed by <code>brand.md</code> and <code>DESIGN.md</code>, all portals share verified HEX/HSL design tokens,
+          a 4px/8px spacing grid, keyboard-accessible modals, and strict Helmet CSP compatibility with zero external CDN dependencies.
+        </p>
+      </article>
+    </section>
+
+    <section class="page-section" aria-labelledby="stack-heading">
+      <div class="section-header">
+        <div>
+          <div class="section-kicker">Runtime &amp; Infrastructure</div>
+          <h2 id="stack-heading">Technology Stack &amp; Environment</h2>
+        </div>
+      </div>
+      <div class="table-shell">
+        <div class="table-responsive">
+          <table>
+            <thead>
+              <tr>
+                <th>Component</th>
+                <th>Technology</th>
+                <th>Specification &amp; Role</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="cell-primary">Runtime</td>
+                <td>Node.js</td>
+                <td>v20+ LTS (multi-stage Alpine container with non-root execution)</td>
+              </tr>
+              <tr>
+                <td class="cell-primary">HTTP Framework</td>
+                <td>Express</td>
+                <td>v4.19+ with Helmet CSP, CORS, monotonic request logger, and 404/5xx guardians</td>
+              </tr>
+              <tr>
+                <td class="cell-primary">Database</td>
+                <td>PostgreSQL</td>
+                <td>16-Alpine with transactional migrations, 1:N &amp; N:M schemas, and named volume persistence</td>
+              </tr>
+              <tr>
+                <td class="cell-primary">Containerization</td>
+                <td>Docker Compose</td>
+                <td>Multi-container orchestration gated by <code>pg_isready</code> health probes</td>
+              </tr>
+              <tr>
+                <td class="cell-primary">Deployment Rule</td>
+                <td>One-Command Rule</td>
+                <td>Zero-touch deterministic startup via <code>docker compose up --build</code></td>
+              </tr>
+              <tr>
+                <td class="cell-primary">Design System</td>
+                <td>CSS Custom Properties</td>
+                <td>Shared <code>/css/tokens.css</code> &amp; <code>/css/style.css</code> meeting WCAG 2.1 AA/AAA contrast</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
     </section>
+
+    <section class="page-section" aria-labelledby="endpoints-heading">
+      <div class="section-header">
+        <div>
+          <div class="section-kicker">HTTP Surface</div>
+          <h2 id="endpoints-heading">Endpoint Directory &amp; Contract</h2>
+        </div>
+      </div>
+      <div class="table-shell">
+        <div class="table-responsive">
+          <table>
+            <thead>
+              <tr>
+                <th>Method</th>
+                <th>Path</th>
+                <th>Description</th>
+                <th>Expected Output</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><span class="endpoint-method">GET</span></td>
+                <td><code>/</code> or <code>/api/health</code></td>
+                <td>System health check &amp; DB ping</td>
+                <td><code>application/json</code> (status, uptime, memory, DB probe)</td>
+              </tr>
+              <tr>
+                <td><span class="endpoint-method">GET</span></td>
+                <td><code>/home</code></td>
+                <td>Alumni Hub landing overview</td>
+                <td><code>text/html</code> (Semantic HTML5)</td>
+              </tr>
+              <tr>
+                <td><span class="endpoint-method">GET</span></td>
+                <td><code>/users</code> &amp; <code>/api/users</code></td>
+                <td>Member directory &amp; user CRUD</td>
+                <td>Pre-hydrated HTML view / JSON REST</td>
+              </tr>
+              <tr>
+                <td><span class="endpoint-method">GET</span></td>
+                <td><code>/jobs</code> &amp; <code>/api/jobs</code></td>
+                <td>Career opportunities board (1:N)</td>
+                <td>Pre-hydrated HTML view / JSON REST</td>
+              </tr>
+              <tr>
+                <td><span class="endpoint-method">GET</span></td>
+                <td><code>/applications</code> &amp; <code>/api/applications</code></td>
+                <td>Candidate application tracker (N:M)</td>
+                <td>Pre-hydrated HTML view / JSON REST</td>
+              </tr>
+              <tr>
+                <td><span class="endpoint-method">GET</span></td>
+                <td><code>/announcements</code> &amp; <code>/api/announcements</code></td>
+                <td>Official campus bulletins</td>
+                <td>Pre-hydrated HTML view / JSON REST</td>
+              </tr>
+              <tr>
+                <td><span class="endpoint-method">GET</span></td>
+                <td><code>/hello/:name</code> &amp; <code>/sum/:n1/:n2</code></td>
+                <td>Parametric greeting &amp; strict numeric summation</td>
+                <td><code>application/json</code> (200 OK / 400 Bad Request)</td>
+              </tr>
+              <tr>
+                <td><span class="endpoint-method">GET</span></td>
+                <td><code>/about</code></td>
+                <td>Architecture &amp; specifications view</td>
+                <td><code>text/html</code> (Semantic HTML5)</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+    </div>
   </main>
 
   <footer>
-    <p>&copy; 2026 Alumni Tracking System Core Team. Built for strict coursework adherence and production readiness.</p>
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <span class="footer-brand-name">Alumni Hub</span>
+        <span class="footer-tagline">Where Academic Legacy Meets Career Momentum.</span>
+      </div>
+      <div class="footer-links">
+        <a href="/home">Home</a>
+        <a href="/users">Directory</a>
+        <a href="/jobs">Opportunities</a>
+        <a href="/applications">Applications</a>
+        <a href="/announcements">Bulletins</a>
+        <a href="/about">About</a>
+        <a href="/api/swagger" target="_blank" rel="noopener noreferrer">Swagger API</a>
+      </div>
+      <div class="footer-copy">
+        <span>&copy; 2026 Alumni Hub &bull; Powered by Alumni Tracking System</span>
+        <span>Architecture &amp; Technical Specifications</span>
+      </div>
+    </div>
   </footer>
+
+  <script src="/js/nav.js"></script>
 </body>
 </html>
